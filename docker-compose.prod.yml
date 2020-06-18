@@ -14,7 +14,7 @@ services:
             context: ./cloudstore
             dockerfile: ./Dockerfile.prod
         restart: unless-stopped
-        command: gunicorn cloudstore.wsgi:application --bind 0.0.0.0:8000
+        command: hypercorn cloudstore.asgi:application --bind 0.0.0.0:8000
         volumes:
             - static_volume:/home/app/web/static
         expose:
@@ -25,10 +25,12 @@ services:
             - db
 
     nginx:
-        image: staticfloat/nginx-certbot
+        build:
+            context: ./nginx
+            dockerfile: ./Dockerfile
         restart: unless-stopped
         volumes:
-            - ./nginx:/etc/nginx/user.conf.d:ro
+            - ./nginx/conf.d:/etc/nginx/user.conf.d:ro
             - static_volume:/home/app/web/static
             - letsencrypt:/etc/letsencrypt
         ports:
