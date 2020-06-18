@@ -1,3 +1,4 @@
 Django==3.0.7
 psycopg2-binary==2.8.5
 Hypercorn==0.10.1
+django-simple-bulma==1.2.0
