@@ -1,13 +1,20 @@
+{% load static %}
 {% load django_simple_bulma %}
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    {% bulma %}
+    <link rel="stylesheet" href="{% static 'css/bulma.css' %}">
+    {% comment %} {% bulma %} {% endcomment %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>cloudstore</title>
+    {% if DEBUG %}
+        <script src="{% static 'cloudstore/js/vue.js' %}"></script>
+    {% else %}
+        <script src="{% static 'cloudstore/js/vue.min.js' %}"></script>
+    {% endif %}
 </head>
 
 <body>

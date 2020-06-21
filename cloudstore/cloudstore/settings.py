@@ -75,13 +75,15 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cloudstore.context_processors.debug',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'cloudstore.wsgi.application'
+# WSGI app for development
 
+WSGI_APPLICATION = 'cloudstore.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

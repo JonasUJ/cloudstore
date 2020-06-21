@@ -15,6 +15,7 @@ services:
         command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./cloudstore/:/usr/src/app/
+            - web_logs:/usr/src/logs/
         ports:
             - 8000:8000
         env_file:
@@ -24,3 +25,4 @@ services:
 
 volumes:
     postgres_data:
+    web_logs:

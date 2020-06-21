@@ -4,6 +4,9 @@ FROM python:3.8-slim
 # set work directory
 WORKDIR /usr/src/app
 
+# create directories
+RUN mkdir ../logs/
+
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
