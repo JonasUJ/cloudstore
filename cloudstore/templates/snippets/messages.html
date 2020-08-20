@@ -1,0 +1,13 @@
+{% for message in messages %}
+    {% if form.prefix %}
+        {% if form.prefix in message.extra_tags %}
+            <div class="notification {{ message.tags }}">
+                {{ message|safe }}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="notification {{ message.tags }}">
+            {{ message|safe }}
+        </div>
+    {% endif %}
+{% endfor %}

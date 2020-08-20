@@ -1,0 +1,27 @@
+{% extends "base/plain_form.html" %}
+
+{% block title %}Sign up{% endblock %}
+
+{% block column_class %}is-three-quarters{% endblock %}
+
+{% block form_title %}Create an account{% endblock %}
+
+{% block additional_fields %}
+    <div class="field is-grouped is-grouped-right">
+        <div class="control">
+            <a href="{% url 'cloudstore:login' %}" class="button has-background-black-bis" type="button">
+                Sign in instead
+            </a>
+        </div>
+        <div class="control">
+            <button class="button is-primary" type="submit" name="submit">
+                Sign up
+            </button>
+        </div>
+</div>
+{% endblock %}
+
+{% block bottom_text %}
+    Don't have an access token?
+    <a href="{% url 'cloudstore:contact' %}">Contact me.</a>
+{% endblock %}

@@ -20,4 +20,4 @@ env/
 .vscode/
 
 # Collected static files
-cloudstore/static
+/static/

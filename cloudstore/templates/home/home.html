@@ -1,0 +1,39 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block head %}
+    <script src="{% static 'js/files.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/file-icon-vectors@1.0.0/dist/file-icon-vivid.min.css" />
+{% endblock %}
+
+{% block content %}
+    <div id="items-section" class="section pt-4">
+        {% include 'snippets/home/homebar.html' %}
+        <input type="hidden" name="pk" value="{{ request.user.pk }}">
+        <div class="container">
+            <div v-if="folders" class="divider">FOLDERS</div>
+            <div v-if="folders" id="folders" class="items columns is-multiline">
+                {% include 'snippets/home/folders.html' %}
+            </div>
+            <div v-if="files" class="divider">FILES</div>
+            <div v-if="files" id="files" class="items columns is-multiline">
+                {% include 'snippets/home/files.html' %}
+            </div>
+        </div>
+        {% verbatim %}
+            <div v-if="dragging" class="drag box content has-background-black-bis">
+                <h4 class="title is-4 has-text-primary mb-0">
+                    <span class="icon mr-2">
+                        <i v-if="type == 'file'" class="far fa-file"></i>
+                        <i v-else-if="type == 'folder'" class="far fa-folder"></i>
+                    </span>
+                    {{ dragging }}
+                </h4>
+            </div>
+        {% endverbatim %}
+    </div>
+{% endblock %}

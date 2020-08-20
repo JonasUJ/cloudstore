@@ -1,0 +1,123 @@
+{% extends "base/base.html" %}
+
+{% load static cloudstore_tags %}
+
+{% block title %}Account{% endblock %}
+
+{% block head %}
+    <script defer src="{% static 'js/account.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="account" class="section">
+        <input type="hidden" name="username" value="{{ request.user }}">
+        <input type="hidden" name="pk" value="{{ request.user.pk }}">
+        <div class="container">
+            <div class="columns is-centered is-vcentered has-text-centered my-6">
+                <div class="column is-narrow">
+                    <figure class="image is-200x200 is-inline-block">
+                        <img src="{{ request.user|gravatar:200 }}" class="is-rounded has-shadow" width="200" height="200">
+                    </figure>
+                </div>
+                <div class="column is-narrow">
+                    <h1 class="title is-1">
+                        {{ request.user }}
+                    </h1>
+                </div>
+            </div>
+            <div class="box has-background-black-bis">
+                <h3 class="title is-3 has-text-primary">Account settings</h3>
+                <hr>
+                <h4 class="title is-4 has-text-primary">Change profile</h4>
+                {% with form_user as form %}
+                    <form enctype="multipart/form-data" method="post">
+                        {% include 'snippets/form.html' %}
+                        <div class="field is-horizontal">
+                            <div class="field-label is-normal">
+                                <label class="label">
+                                    Profile image
+                                </label>
+                            </div>
+                            <div class="field-body">
+                                <div class="content pt-2">
+                                    To change your profile image, register your email on
+                                    <a href="https://gravatar.com/">Gravatar</a>.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field is-grouped is-grouped-right">
+                            <div class="control">
+                                <button class="button is-primary">Update</button>
+                            </div>
+                        </div>
+                    </form>
+                {% endwith %}
+                <hr>
+                <h4 class="title is-4 has-text-primary">Change password</h4>
+                {% with form_password as form %}
+                    <form enctype="multipart/form-data" method="post">
+                        {% include 'snippets/form.html' %}
+                        <div class="field is-grouped is-grouped-right">
+                            <div class="control">
+                                <button class="button is-primary">Change</button>
+                            </div>
+                        </div>
+                    </form>
+                {% endwith %}
+                <hr>
+                <h4 class="title is-4 has-text-danger">Danger zone</h4>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">
+                            Delete account
+                        </label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="content pt-2">
+                                Permanently removes your account and all associated data.
+                                This action cannot be undone.
+                            </div>
+                        </div>
+                        <div class="field is-grouped is-grouped-right">
+                            <div class="control">
+                                <button @click="modalActive = true" class="button is-danger">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </div>
+        </div>
+
+        <div class="modal" :class="{'is-active': modalActive}">
+            <div class="modal-background" @click="modalActive = false"></div>
+            <div class="modal-content">
+                <div class="section">
+                    <div class="box is-narrow">
+                        {% verbatim %}
+                            <div class="field">
+                                <label class="label is-normal">
+                                    Type your username to confirm
+                                </label>
+                            <div class="field-body">
+                                <div class="field is-expanded">
+                                    <div class="field has-addons">
+                                        <div class="control is-expanded">
+                                            <input :class="{'is-danger': deleteMsg}" @keydown.enter="deleteAccount" type="input" class="input" name="confirm-username" placeholder="Confirm username" id="delete-username">
+                                        </div>
+                                        <div class="control">
+                                            <button @click="deleteAccount" class="button is-danger">Confirm</button>
+                                        </div>
+                                    </div>
+                                    <p class="help is-danger" v-if="deleteMsg">{{ deleteMsg }}</p>
+                                </div>
+                            </div>
+                        {% endverbatim %}
+                    </div>
+                </div>
+            </div>
+            <button class="modal-close is-large" aria-label="close" @click="modalActive = false"></button>
+        </div>
+    </div>
+{% endblock %}

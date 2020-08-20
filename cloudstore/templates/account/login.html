@@ -1,0 +1,18 @@
+{% extends "base/plain_form.html" %}
+
+{% block form_title %}{% block title %}Sign in{% endblock %}{% endblock %}
+
+{% block column_class %}is-4 is-narrow{% endblock %}
+
+{% block additional_fields %}
+    <div class="field">
+        <button class="button is-primary is-fullwidth" type="submit" name="submit">
+            Sign in
+        </button>
+    </div>
+{% endblock %}
+
+{% block bottom_text %}
+    Don't have an account?
+    <a href="{% url 'cloudstore:signup' %}">Create one!</a>
+{% endblock %}

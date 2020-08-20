@@ -1,0 +1,20 @@
+[MASTER]
+load-plugins=pylint_django
+ignore=migrations, __init__.py, env
+
+[MESSAGES CONTROL]
+disable=
+    C0103, # invalid-name # ignore=migrations for some reason doesn't work
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116, # missing-function-docstring
+    C0415, # import-outside-toplevel
+
+    R0903, # too-few-public-methods
+
+[FORMAT]
+max-line-length=100
+
+[DESIGN]
+max-args=10
+max-parents=20

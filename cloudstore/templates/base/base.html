@@ -1,0 +1,49 @@
+{% load static django_simple_bulma %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Website{% endblock %} - {{ request.site.name }}</title>
+
+    {# Stylesheets #}
+    {% bulma %}
+    <link rel="stylesheet" href="{% static 'css/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {# Scripts #}
+    {% if DEBUG %}
+        <script defer src="{% static 'js/vue.js' %}"></script>
+    {% else %}
+        <script defer src="{% static 'js/vue.min.js' %}"></script>
+    {% endif %}
+    <script defer src="{% static 'js/base.js' %}"></script>
+    <script defer src="{% static 'js/navbar.js' %}"></script>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    {% csrf_token %}
+
+    <header>
+        {% block header %}
+            {% include "snippets/navbar.html" %}
+        {% endblock %}
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        {% block footer %}
+            {% include "snippets/footer.html" %}
+        {% endblock %}
+    </footer>
+</body>
+
+</html>

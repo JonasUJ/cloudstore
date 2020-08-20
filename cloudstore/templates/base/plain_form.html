@@ -1,0 +1,29 @@
+{% extends 'base/centered_column.html' %}
+
+{% block header %}{% endblock %}
+
+{% block center %}
+    <div class="column {% block column_class %}is-half{% endblock %}">
+        <div class="box has-background-black-bis">
+            <h1 class="title has-text-primary">{% block form_title %}Plain form{% endblock %}</h1>
+            <div class="content">
+                {% block form_subtitle %}{% endblock %}
+            </div>
+            <form enctype="multipart/form-data" method="post">
+                {% include "snippets/form.html" %}
+                {% block additional_fields %}
+                    <div class="field is-grouped is-grouped-right">
+                        <div class="control">
+                            <button class="button is-primary" type="submit" name="submit">
+                                {% block submit_text %}Confirm{% endblock  %}
+                            </button>
+                        </div>
+                    </div>
+                {% endblock %}
+            </form>
+        </div>
+        <div class="content has-text-centered">
+            {% block bottom_text %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

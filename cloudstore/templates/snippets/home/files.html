@@ -1,0 +1,59 @@
+{% verbatim %}
+
+<div v-cloak
+     v-for="file in files"
+     :key="file.id"
+     class="file column is-full-mobile is-6-tablet is-4-desktop is-3-widescreen is-one-fifth-fullhd is-2">
+    <figure class="image is-square">
+        <div @dragstart="drag($event, file, 'file')"
+             @dragend="dragging = false"
+             :class="{'is-disabled': dragging}"
+             draggable="true"
+             tabindex="0"
+             class="box has-shadow has-ratio px-0 py-0">
+            <a @click.prevent href="" tabindex="-1">
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="image is-square">
+                            <span class="icon file-icon has-background-black-bis">
+                                <span :class="getIconClass(file.ext)" class="fiv-viv"></span>
+                            </span>
+                            <img @load="$event.target.style.opacity = 1" v-if="isDisplayable(file.ext)" :src="file.file">
+                        </figure>
+                    </div>
+                    <div class="card-content-footer has-background-black-bis">
+                        <div class="card-content">
+                            <div class="content">
+                                <h4 class="title is-4 has-text-primary mb-0">
+                                    <span class="icon mr-2">
+                                        <i class="far fa-file"></i>
+                                    </span>
+                                    {{ file.name }}
+                                </h4>
+                            </div>
+                        </div>
+                        <footer class="card-footer">
+                            <a href="#" class="card-footer-item">
+                                <span class="icon">
+                                    <i class="fas fa-share-square"></i>
+                                </span>
+                            </a>
+                            <a :href="file.file" download class="card-footer-item">
+                                <span class="icon">
+                                    <i class="fas fa-download"></i>
+                                </span>
+                            </a>
+                            <a href="#" class="card-footer-item">
+                                <span class="icon">
+                                    <i class="far fa-trash-alt"></i>
+                                </span>
+                            </a>
+                        </footer>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </figure>
+</div>
+
+{% endverbatim %}

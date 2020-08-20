@@ -1,0 +1,9 @@
+{% csrf_token %}
+
+{% include 'snippets/errors.html' %}
+
+{% include 'snippets/messages.html' %}
+
+{% for field in form %}
+    {% include 'snippets/field.html' %}
+{% endfor %}

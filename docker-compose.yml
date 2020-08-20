@@ -4,18 +4,19 @@ services:
     db:
         image: postgres:12.0-alpine
         volumes:
-            - postgres_data:/var/lib/postgresql/data/
+            - postgres_data_dev:/var/lib/postgresql/data/
         environment:
             - POSTGRES_USER=cloudstore
             - POSTGRES_PASSWORD=cloudstore
             - POSTGRES_DB=cloudstore_dev
 
     web:
-        build: ./cloudstore
+        build: ./
         command: python manage.py runserver 0.0.0.0:8000
         volumes:
-            - ./cloudstore/:/usr/src/app/
-            - web_logs:/usr/src/logs/
+            - ./:/usr/src/app
+            - web_logs_dev:/usr/src/app/logs
+            - files_dev:/usr/src/files
         ports:
             - 8000:8000
         env_file:
@@ -24,5 +25,6 @@ services:
             - db
 
 volumes:
-    postgres_data:
-    web_logs:
+    postgres_data_dev:
+    web_logs_dev:
+    files_dev:

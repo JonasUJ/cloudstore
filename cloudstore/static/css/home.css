@@ -1,0 +1,105 @@
+main {
+    min-height: calc(100vh - 3.25rem);
+}
+
+.items * {
+    transition-timing-function: ease-out;
+    transition-duration: 86ms;
+    transition-property: box-shadow,transform;
+    will-change: box-shadow,transform;
+}
+
+.items > .column > figure:hover,
+.items > .column > figure:focus-within {
+    box-shadow: 0 1.5rem 1.5rem -1rem #121212;
+    transform: translateY(-.5rem);
+}
+
+.items > .column > figure:focus-within .box {
+    border: 2px solid #CC174F;
+}
+
+.items > .folder.column > figure:focus-within .box {
+    margin: -2px;
+}
+
+.items > .column > figure a:focus,
+.items > .column > figure .box:focus {
+    outline: none;
+}
+
+.items .box {
+    overflow: hidden;
+}
+
+.items .card-image img {
+    width: initial;
+    max-width: initial;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    height: calc(100% - 8px);
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+}
+
+.items .card-content-footer {
+    transform: translateY(-60%);
+}
+
+.items > .column > figure:hover .card-content-footer,
+.items > .column > figure:focus-within .card-content-footer {
+    transform: translateY(-100%);
+}
+
+.items > .column h4.title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-bottom: 0.2ch;
+}
+
+.items .card-footer,
+.items .card-footer-item {
+    border: none;
+}
+
+.items .card-footer-item:hover,
+.items .card-footer-item:focus {
+    background-color: #1c1c1c;
+}
+
+.icon.file-icon {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: -10%;
+    padding: 30%;
+}
+
+.icon.file-icon > * {
+    width: 100%;
+    height: 100%;
+    opacity: 70%;
+}
+
+
+.folder,
+.file {
+    animation: 200ms ease-out fadeIn;
+}
+
+.folder .box.is-active:not(:hover):not(:focus-within) {
+    outline: 2px solid #CC174F;
+    outline-offset: 8px;
+}
+
+.items > .column > figure:hover .box.is-disabled,
+.items > .column > figure:focus-within .box.is-disabled {
+    opacity: 0.5;
+}
+
+.drag {
+    position: absolute;
+    top: -1000px;
+    border: 2px solid #CC174F;
+}

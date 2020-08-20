@@ -1,0 +1,22 @@
+# Dependencies
+Django~=3.0
+psycopg2-binary~=2.8
+Hypercorn~=0.10
+djangorestframework~=3.11
+shortuuid~=1.0
+django-simple-bulma~=2.0
+django-private-storage~=2.2
+
+# Linting
+pre-commit~=2.6
+bandit~=1.6
+
+## Pylint
+pylint~=2.5
+pylint-django~=2.2
+
+## Flake8
+flake8~=3.8
+flake8-bugbear~=20.1
+flake8-import-order~=0.18
+flake8-tidy-imports~=4.1

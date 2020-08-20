@@ -1,0 +1,12 @@
+{% extends "base/centered_column.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block center %}
+    <div class="column is-4 has-text-centered">
+        <h1 class="title">{{ heading }}</h1>
+        {{ content|safe }}
+    </div>
+{% endblock %}
