@@ -9,6 +9,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     AccessTokenCreate,
     FileViewSet,
+    FolderContentsView,
     FolderViewSet,
     UserRetrieveDestroyView,
 )
@@ -36,6 +37,7 @@ app_name = 'api'
 urlpatterns = [
     path('', api, name='root'),
     path('', include(router.urls)),
+    path('folders/<int:pk>/contents/', FolderContentsView.as_view()),
     path('access_token/', AccessTokenCreate.as_view(), name='access-token-create'),
     path('users/<int:pk>/', UserRetrieveDestroyView.as_view(), name='cloudstoreuser-detail'),
 ]

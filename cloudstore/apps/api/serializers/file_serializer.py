@@ -17,6 +17,7 @@ class FileSerializer(serializers.ModelSerializer):
         self.fields['folder'].queryset = self.fields['folder'].queryset.filter(owner=request.user)
 
         if request.method in ('PUT', 'PATCH'):
-            del self.fields['file']
+            self.fields['file'].read_only = True
+            self.fields['file'].required = False
             self.fields['folder'].required = False
         super().__init__(*args, **kwargs)

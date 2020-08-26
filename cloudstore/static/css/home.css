@@ -88,6 +88,7 @@ main {
     animation: 200ms ease-out fadeIn;
 }
 
+#homebar li > a.is-active,
 .folder .box.is-active:not(:hover):not(:focus-within) {
     outline: 2px solid #CC174F;
     outline-offset: 8px;
@@ -102,4 +103,17 @@ main {
     position: absolute;
     top: -1000px;
     border: 2px solid #CC174F;
+}
+
+#items-section > .container.is-active:not(.is-disabled) {
+    outline: 2px solid #CC174F;
+    background: rgba(204, 23, 80, 0.1);
+}
+
+.divider {
+    user-select: none;
+}
+
+#homebar .level > * {
+    flex-basis: 50%;
 }

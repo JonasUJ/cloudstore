@@ -1,20 +1,51 @@
-{% load static cloudstore_tags %}
+{% verbatim %}
 
 <nav id="homebar" class="level">
     <div class="container">
-        <div class="level-left">
+        <nav class="level">
 
-        </div>
-
-        <div class="level-right">
-            <div class="level-item">
-                <button class="button is-primary has-icons-left is-fullwidth">
-                    <span class="icon">
-                        <i class="fas fa-plus"></i>
-                    </span>
-                    <span>Upload</span>
-                </button>
+            <div class="level-left">
+                <nav v-if="breadcrumb.length > 1" v-cloak class="breadcrumb">
+                    <ul>
+                        <li v-for="(_folder, key) in breadcrumb.slice().reverse()"
+                            :class="{'is-active': key + 1 === breadcrumb.length}">
+                            <a @click="openFolder(_folder.id)"
+                               @click.prevent
+                               @dragenter.stop="dragenter($event)"
+                               @dragover.prevent="$event.dataTransfer.dropEffect = 'move'"
+                               @drop.stop.prevent="drop($event, _folder)"
+                               href="">
+                                {{ _folder.name }}
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
-        </div>
+
+            <div class="level-right">
+
+                <div class="level-item">
+                    <button class="button has-icons-left is-fullwidth">
+                        <span class="icon">
+                            <i class="fas fa-folder"></i>
+                        </span>
+                        <span>New folder</span>
+                    </button>
+                </div>
+
+                <div class="level-item">
+                    <button class="button is-primary has-icons-left is-fullwidth">
+                        <span class="icon">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                        <span>Upload</span>
+                    </button>
+                </div>
+
+            </div>
+
+        </nav>
     </div>
 </nav>
+
+{% endverbatim %}

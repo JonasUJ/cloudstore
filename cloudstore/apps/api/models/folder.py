@@ -6,7 +6,7 @@ from ..models import File
 
 class Folder(models.Model):
     name = models.CharField(max_length=200)
-    parent = models.ForeignKey('Folder',
+    folder = models.ForeignKey('Folder',
                                blank=True, null=True,
                                related_name='folders',
                                on_delete=models.CASCADE)

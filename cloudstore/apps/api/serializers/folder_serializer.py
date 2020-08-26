@@ -1,14 +1,15 @@
 from rest_framework import serializers
 
-from ..models import Folder
+from . import FileSerializer
+from ..models import File, Folder
 
 
 class FolderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Folder
-        fields = ['id', 'name', 'files', 'folders', 'parent', 'owner']
+        fields = ['id', 'name', 'files', 'folders', 'folder', 'owner']
         extra_kwargs = {
-            'parent': {'allow_null': False},
+            'folder': {'allow_null': False},
             'files': {'read_only': True},
             'folders': {'read_only': True},
             'owner': {'read_only': True},
@@ -16,19 +17,32 @@ class FolderSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         request = kwargs['context']['request']
-        self.fields['parent'].queryset = self.fields['parent'].queryset.filter(owner=request.user)
+        self.fields['folder'].queryset = self.fields['folder'].queryset.filter(owner=request.user)
         super().__init__(*args, **kwargs)
 
-    def validate_parent(self, parent):
-        pk = self.context.get('pk', False)
+    def validate_folder(self, folder):
+        folder_pk = self.context.get('pk', False)
 
         # pk it not passed when creating folders
-        if not pk:
-            return parent
+        if not folder_pk:
+            return folder
 
-        folder = Folder.objects.get(pk=pk)
-        if parent == folder:
+        _folder = Folder.objects.get(pk=folder_pk)
+        if folder == _folder:
             raise serializers.ValidationError('Folder cannot be its own parent')
-        if folder.deep_contains(parent):
+        if folder.deep_contains(folder):
             raise serializers.ValidationError('Folder cannot contain its own parent')
-        return parent
+        return folder
+
+
+class FolderContentsSerializer(FolderSerializer):
+    files = serializers.SerializerMethodField()
+    folders = serializers.SerializerMethodField()
+
+    def get_files(self, obj):
+        return [FileSerializer(o, context=self.context).data
+                for o in File.objects.filter(folder=obj.pk)]
+
+    def get_folders(self, obj):
+        return [FolderSerializer(o, context=self.context).data
+                for o in Folder.objects.filter(folder=obj.pk)]

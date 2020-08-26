@@ -1,13 +1,14 @@
 from django.db import IntegrityError
 
 from rest_framework import status
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from ..models import Folder
 from ..permissions import IsSelf
-from ..serializers import FolderSerializer
+from ..serializers import FolderContentsSerializer, FolderSerializer
 
 
 class FolderViewSet(ModelViewSet):
@@ -31,10 +32,16 @@ class FolderViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        pk = self.kwargs.get('pk', False)
-        if pk:
+        folder_pk = self.kwargs.get('pk', False)
+        if folder_pk:
             try:
-                context['pk'] = int(pk)
+                context['pk'] = int(folder_pk)
             except ValueError:
                 pass
         return context
+
+
+class FolderContentsView(RetrieveAPIView):
+    queryset = Folder.objects.all()
+    serializer_class = FolderContentsSerializer
+    permission_classes = [IsAuthenticated, IsSelf]

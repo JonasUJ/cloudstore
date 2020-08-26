@@ -1,0 +1,16 @@
+# Debugging
+debugpy
+
+# Linting
+pre-commit~=2.6
+bandit~=1.6
+
+## Pylint
+pylint~=2.5
+pylint-django~=2.2
+
+## Flake8
+flake8~=3.8
+flake8-bugbear~=20.1
+flake8-import-order~=0.18
+flake8-tidy-imports~=4.1
