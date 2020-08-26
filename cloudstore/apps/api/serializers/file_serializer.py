@@ -11,6 +11,7 @@ class FileSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'thumb': {'read_only': True},
             'owner': {'read_only': True},
+            'file': {'allow_empty_file': True}
         }
 
     def __init__(self, *args, **kwargs):
