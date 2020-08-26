@@ -75,6 +75,10 @@ ROOT_URLCONF = 'cloudstore.urls'
 # Default user model
 AUTH_USER_MODEL = 'cloudstore.CloudstoreUser'
 
+# Used when deciding whether to generate thumbnails
+IMAGE_THUMBNAIL_TYPES = ['JPEG', 'GIF', 'PNG', 'BMP', 'WEBP']
+IMAGE_THUMBNAIL_SIZE = (256, 256)
+
 # Root directory of all user files stored by the app
 PRIVATE_STORAGE_ROOT = os.environ.get('FILE_STORAGE_DIR')
 
@@ -83,6 +87,8 @@ PRIVATE_STORAGE_AUTH_FUNCTION = 'cloudstore.apps.cloudstore.permissions.allow_ow
 if not DEBUG:
     PRIVATE_STORAGE_SERVER = 'nginx'
     PRIVATE_STORAGE_INTERNAL_URL = '/private-x-accel-redirect/'
+else:
+    PRIVATE_STORAGE_SERVER = 'django'
 
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.MemoryFileUploadHandler',

@@ -6,3 +6,4 @@ djangorestframework~=3.11
 shortuuid~=1.0
 django-simple-bulma~=2.0
 django-private-storage~=2.2
+Pillow~=7.2

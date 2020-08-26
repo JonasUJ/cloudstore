@@ -12,7 +12,8 @@ class FileViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsSelf]
 
     def perform_create(self, serializer: FileSerializer):
-        serializer.save(owner=self.request.user)
+        file = serializer.save(owner=self.request.user)
+        file.generate_thumbnail()
 
     def get_queryset(self):
         return super().get_queryset().filter(owner=self.request.user)

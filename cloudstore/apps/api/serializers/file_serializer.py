@@ -6,9 +6,10 @@ from ..models import File
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
-        fields = ['id', 'name', 'file', 'folder', 'owner',
+        fields = ['id', 'name', 'file', 'thumb', 'folder', 'owner',
                   'created', 'accessed', 'clean_name', 'ext']
         extra_kwargs = {
+            'thumb': {'read_only': True},
             'owner': {'read_only': True},
         }
 

@@ -21,7 +21,7 @@
                                 <span :class="getIconClass(file.ext)" class="fiv-viv"></span>
                             </span>
                             <img @load="$event.target.style.opacity = 1"
-                                 :src="file.file"
+                                 :src="file.thumb || file.file"
                                  v-if="isDisplayable(file.ext)">
                         </figure>
                     </div>

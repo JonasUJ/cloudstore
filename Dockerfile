@@ -15,7 +15,8 @@ RUN pip install -r requirements.txt
 
 # create directories
 RUN mkdir ./logs && \
-    mkdir ../files
+    mkdir ../files && \
+    mkdir ../files/thumb
 
 # set environment variables
 ENV PYTHONUNBUFFERED 1
