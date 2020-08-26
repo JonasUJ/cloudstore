@@ -20,6 +20,6 @@ def user_post_save_receiver(sender, instance, created, **kwargs):  # pylint: dis
     if created:
         instance.base_folder = Folder.objects.create(owner=instance,
                                                      name=f'base_folder_{instance.pk}',
-                                                     parent=None)
+                                                     folder=None)
         Token.objects.create(user=instance)
         instance.save()
