@@ -12,7 +12,13 @@ class CloudstoreUser(AbstractUser):
     base_folder = models.ForeignKey(Folder,
                                     default=None, null=True,
                                     on_delete=models.DO_NOTHING)
-    ...
+
+
+class UserSettings(models.Model):
+    user = models.OneToOneField(CloudstoreUser, on_delete=models.CASCADE, related_name='settings')
+    theme = models.CharField(max_length=8, default='dark')
+    view = models.CharField(max_length=8, default='tiles')
+    show_ext = models.BooleanField(default=False)
 
 
 @receiver(signals.post_save, sender=CloudstoreUser)
@@ -22,4 +28,5 @@ def user_post_save_receiver(sender, instance, created, **kwargs):  # pylint: dis
                                                      name=f'base_folder_{instance.pk}',
                                                      folder=None)
         Token.objects.create(user=instance)
+        UserSettings.objects.create(user=instance)
         instance.save()

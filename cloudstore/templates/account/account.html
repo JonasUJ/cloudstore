@@ -28,6 +28,18 @@
             <div class="box has-background-black-bis">
                 <h3 class="title is-3 has-text-primary">Account settings</h3>
                 <hr>
+                {% with form_settings as form %}
+                    <form enctype="multipart/form-data" method="post">
+                        {% include 'snippets/form.html' %}
+                        <div class="field is-grouped is-grouped-right">
+                            <div class="control">
+                                <input type="submit" class="button input is-primary" name="{{ form.prefix }}" value="Save">
+                            </div>
+                        </div>
+                    </form>
+                {% endwith %}
+                <h4 class="title is-4 has-text-primary">Edit settings</h4>
+                <hr>
                 <h4 class="title is-4 has-text-primary">Change profile</h4>
                 {% with form_user as form %}
                     <form enctype="multipart/form-data" method="post">
@@ -47,7 +59,7 @@
                         </div>
                         <div class="field is-grouped is-grouped-right">
                             <div class="control">
-                                <button class="button is-primary">Update</button>
+                                <input type="submit" class="button input is-primary" name="{{ form.prefix }}" value="Update">
                             </div>
                         </div>
                     </form>
@@ -59,7 +71,7 @@
                         {% include 'snippets/form.html' %}
                         <div class="field is-grouped is-grouped-right">
                             <div class="control">
-                                <button class="button is-primary">Change</button>
+                                <input type="submit" class="button input is-primary" name="{{ form.prefix }}" value="Change">
                             </div>
                         </div>
                     </form>

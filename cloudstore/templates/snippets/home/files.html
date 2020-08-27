@@ -32,7 +32,7 @@
                                     <span class="icon mr-2">
                                         <i class="far fa-file"></i>
                                     </span>
-                                    {{ file.name }}
+                                    {{ user.settings.show_ext ? file.name : file.clean_name}}
                                 </h4>
                             </div>
                         </div>

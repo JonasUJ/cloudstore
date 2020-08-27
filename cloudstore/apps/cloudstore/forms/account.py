@@ -1,8 +1,35 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm, UsernameField
-from django.forms import CharField, EmailField, ModelForm, PasswordInput, TextInput
+from django.forms import (
+    BooleanField,
+    CharField,
+    CheckboxInput,
+    EmailField,
+    ModelForm,
+    PasswordInput,
+    TextInput
+)
 
 from .bulma_mixin import BulmaMixin
+from ..models import UserSettings
+
+
+class UserSettingsForm(BulmaMixin, ModelForm):
+    class Meta:
+        model = UserSettings
+        fields = ['show_ext']
+
+    show_ext = BooleanField(
+        label='Extensions',
+        widget=CheckboxInput(attrs={'class': 'is-checkradio'}),
+        required=False,
+        help_text='Show file name extensions',
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.update_fields()
+        self.add_attrs('show_ext', {'is_horizontal': True})
 
 
 class UserEditForm(BulmaMixin, ModelForm):

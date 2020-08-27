@@ -1,31 +1,29 @@
 {% load cloudstore_tags %}
 
-{% if not field|is_checkbox %}
-    <div class="control
-            {% if field.field.icon_left %} has-icons-left {% endif %}
-            {% if field.icon_right %} has-icons-right {% endif %}">
-        {{ field }}
-        {% include 'snippets/icons.html' %}
-    </div>
-    {% if field.help_text or field.errors %}
-        {% if field.errors %}
-            <span class="help is-danger">
-                <ul>
-                    {% for error in field.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </span>
-        {% endif %}
+<div class="control
+        {% if field.field.icon_left %} has-icons-left {% endif %}
+        {% if field.icon_right %} has-icons-right {% endif %}">
+    {{ field }}
+    {% if field|is_checkbox %}
+        <label for="{{ field.auto_id }}">
+            {{ field.help_text }}
+        </label>
+    {% endif %}
+    {% include 'snippets/icons.html' %}
+</div>
+{% if field.help_text or field.errors %}
+    {% if field.errors %}
+        <span class="help is-danger">
+            <ul>
+                {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </span>
+    {% endif %}
+    {% if not field|is_checkbox %}
         <p class="help">
             {{ field.help_text|safe }}
         </p>
     {% endif %}
-{% else %}
-<div class="control">
-    {{ field }}
-    <label for="{{ field.auto_id }}">
-        {{ field.help_text }}
-    </label>
-</div>
 {% endif %}

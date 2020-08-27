@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
         el: '#items-section',
         data: {
             cache: {},
+            user: null,
             files: [],
             folders: [],
             breadcrumb: [],
@@ -388,6 +389,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams(location.search);
             const pk = params.get('pk') || get('base_folder');
             window.history.replaceState({pk:pk}, '', location.href);
+
+            // Get the current user
+            this.user = await fetchData(`/api/users/${get('pk')}/`, {}, 'GET')
+
+            // Update page
             await this.setFolder(pk);
             await this.refresh();
         },
