@@ -11,8 +11,7 @@ from ..forms import CloudstorePasswordChangeForm, UserEditForm, UserSettingsForm
 class AccountView(LoginRequiredMixin, View):
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        form_settings = UserSettingsForm(prefix='form_settings',
-                                         initial={'show_ext': request.user.settings.show_ext})
+        form_settings = UserSettingsForm(instance=request.user.settings, prefix='form_settings')
         form_user = UserEditForm(prefix='form_user',
                                  initial={'username': request.user.username,
                                           'email': request.user.email})
@@ -41,15 +40,13 @@ class AccountView(LoginRequiredMixin, View):
                 form_settings.save()
 
         elif any('form_user' in k for k in request.POST):
-            form_settings = UserSettingsForm(prefix='form_settings',
-                                             initial={'show_ext': request.user.settings.show_ext})
+            form_settings = UserSettingsForm(instance=request.user.settings, prefix='form_settings')
             form_password = CloudstorePasswordChangeForm(request.user, prefix='form_password')
             if form_user.is_valid():
                 form_user.save()
 
         elif any('form_password' in k for k in request.POST):
-            form_settings = UserSettingsForm(prefix='form_settings',
-                                             initial={'show_ext': request.user.settings.show_ext})
+            form_settings = UserSettingsForm(instance=request.user.settings, prefix='form_settings')
             form_user = UserEditForm(prefix='form_user',
                                      initial={'username': request.user.username,
                                               'email': request.user.email})

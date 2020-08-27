@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import AuthenticationForm, UsernameField
-from django.forms import BooleanField, CharField, CheckboxInput, PasswordInput, TextInput
+from django.forms import BooleanField, CharField, PasswordInput, TextInput
 
 from .bulma_mixin import BulmaMixin
 
@@ -20,7 +20,6 @@ class LoginForm(BulmaMixin, AuthenticationForm):
     )
     remember_me = BooleanField(
         label='',
-        widget=CheckboxInput(attrs={'class': 'is-checkradio'}),
         required=False,
         help_text='Remember me',
     )

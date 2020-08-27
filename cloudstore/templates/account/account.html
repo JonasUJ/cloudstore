@@ -28,6 +28,7 @@
             <div class="box has-background-black-bis">
                 <h3 class="title is-3 has-text-primary">Account settings</h3>
                 <hr>
+                <h4 class="title is-4 has-text-primary">Edit settings</h4>
                 {% with form_settings as form %}
                     <form enctype="multipart/form-data" method="post">
                         {% include 'snippets/form.html' %}
@@ -38,7 +39,6 @@
                         </div>
                     </form>
                 {% endwith %}
-                <h4 class="title is-4 has-text-primary">Edit settings</h4>
                 <hr>
                 <h4 class="title is-4 has-text-primary">Change profile</h4>
                 {% with form_user as form %}

@@ -14,6 +14,8 @@ class BulmaMixin:
                 self.add_classes(field, 'is-danger')
             if not isinstance(field.widget, CheckboxInput):
                 self.add_classes(field, 'input')
+            else:
+                self.add_classes(field, 'is-checkradio')
 
     @staticmethod
     def add_classes(field: Field, class_string: str) -> None:

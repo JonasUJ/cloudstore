@@ -18,6 +18,7 @@ class UserSettings(models.Model):
     user = models.OneToOneField(CloudstoreUser, on_delete=models.CASCADE, related_name='settings')
     theme = models.CharField(max_length=8, default='dark')
     view = models.CharField(max_length=8, default='tiles')
+    view_img = models.BooleanField(default=True)
     show_ext = models.BooleanField(default=False)
 
 

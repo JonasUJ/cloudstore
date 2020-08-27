@@ -22,7 +22,7 @@
                             </span>
                             <img @load="$event.target.style.opacity = 1"
                                  :src="file.thumb || file.file"
-                                 v-if="isDisplayable(file.ext)">
+                                 v-if="user.settings.view_img && isDisplayable(file.ext)">
                         </figure>
                     </div>
                     <div class="card-content-footer has-background-black-bis">

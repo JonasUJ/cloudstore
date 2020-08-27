@@ -3,7 +3,6 @@ from django.contrib.auth.forms import PasswordChangeForm, UsernameField
 from django.forms import (
     BooleanField,
     CharField,
-    CheckboxInput,
     EmailField,
     ModelForm,
     PasswordInput,
@@ -17,11 +16,16 @@ from ..models import UserSettings
 class UserSettingsForm(BulmaMixin, ModelForm):
     class Meta:
         model = UserSettings
-        fields = ['show_ext']
+        fields = ['view_img', 'show_ext']
+
+    view_img = BooleanField(
+        label='Images',
+        required=False,
+        help_text='Preview images when browsing. Can be data intensive on slow connections.',
+    )
 
     show_ext = BooleanField(
         label='Extensions',
-        widget=CheckboxInput(attrs={'class': 'is-checkradio'}),
         required=False,
         help_text='Show file name extensions',
     )
@@ -29,7 +33,7 @@ class UserSettingsForm(BulmaMixin, ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.update_fields()
-        self.add_attrs('show_ext', {'is_horizontal': True})
+        self.add_attrs(['view_img', 'show_ext'], {'is_horizontal': True})
 
 
 class UserEditForm(BulmaMixin, ModelForm):
