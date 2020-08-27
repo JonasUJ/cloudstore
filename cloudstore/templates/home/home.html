@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <div @dragenter="dragenter($event)" id="items-section" class="section pt-4">
+    <section @dragenter="dragenter($event)" id="items-section" class="section pt-4">
         {% include 'snippets/home/homebar.html' %}
         <input type="hidden" name="pk" value="{{ request.user.pk }}">
         <input type="hidden" name="base_folder" value="{{ request.user.base_folder.pk }}">
@@ -40,5 +40,5 @@
                 </h4>
             </div>
         {% endverbatim %}
-    </div>
+    </section>
 {% endblock %}

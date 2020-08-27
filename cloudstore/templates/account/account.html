@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="account" class="section">
+    <section id="account" class="section">
         <input type="hidden" name="username" value="{{ request.user }}">
         <input type="hidden" name="pk" value="{{ request.user.pk }}">
         <div class="container">
@@ -105,7 +105,7 @@
         <div class="modal" :class="{'is-active': modalActive}">
             <div class="modal-background" @click="modalActive = false"></div>
             <div class="modal-content">
-                <div class="section">
+                <section class="section">
                     <div class="box is-narrow">
                         {% verbatim %}
                             <div class="field">
@@ -127,9 +127,9 @@
                             </div>
                         {% endverbatim %}
                     </div>
-                </div>
+                </sesction>
             </div>
             <button class="modal-close is-large" aria-label="close" @click="modalActive = false"></button>
         </div>
-    </div>
+    </section>
 {% endblock %}
