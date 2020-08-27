@@ -244,8 +244,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Set the name and truncate it
                 let name = obj.name;
-                if (name.length > 16) {
-                    name = `${name.substring(0, 16)}...`;
+                if (name.length > 12) {
+                    name = `${name.substring(0, 12)}...`;
                 }
 
                 this.dragging = name;
