@@ -1,7 +1,7 @@
 import os
 from io import BytesIO
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 from django.conf import settings
 from django.core.files import File as CoreFile
@@ -62,17 +62,20 @@ class File(models.Model):
             ext = 'JPEG'
 
         if ext in settings.IMAGE_THUMBNAIL_TYPES:
-            img = Image.open(self.file.file)
-            img.thumbnail(settings.IMAGE_THUMBNAIL_SIZE)
-            img_bytes = BytesIO()
-            img.save(img_bytes, format=ext)
-            self.thumb.save(self.thumb.name, CoreFile(img_bytes))
+            try:
+                img = Image.open(self.file.file)
+                img.thumbnail(settings.IMAGE_THUMBNAIL_SIZE)
+                img_bytes = BytesIO()
+                img.save(img_bytes, format=ext)
+                self.thumb.save(self.thumb.name, CoreFile(img_bytes))
+            except UnidentifiedImageError:
+                pass  # We couldn't open the image, probably because it isn't one.
 
     def __str__(self):
         return self.name
 
 
-@receiver(models.signals.pre_delete, sender=File)
-def remove_file(sender, instance: File, using, **kwargs):  # pylint: disable=unused-argument
-    instance.file.delete()
-    instance.thumb.delete()
+@receiver(models.signals.post_delete, sender=File)
+def remove_file(sender, instance: File, **kwargs):  # pylint: disable=unused-argument
+    instance.file.delete(False)
+    instance.thumb.delete(False)
