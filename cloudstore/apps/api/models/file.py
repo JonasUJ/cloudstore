@@ -43,7 +43,7 @@ class File(models.Model):
     uuid = models.CharField(max_length=8, default=get_uuid, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     accessed = models.DateTimeField(auto_now=True)
-    file = PrivateFileField(upload_to=get_filename, blank=True, null=True)
+    file = PrivateFileField(upload_to=get_filename)
     thumb = NotRequiredPrivateFileField(upload_to=get_thumbnail_filename, blank=True, null=True)
     folder = models.ForeignKey('Folder', related_name='files', on_delete=models.CASCADE)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,

@@ -19,10 +19,4 @@ class Migration(migrations.Migration):
             field=cloudstore.apps.api.models.file.NotRequiredPrivateFileField(
                 blank=True, null=True, storage=private_storage.storage.files.PrivateFileSystemStorage(), upload_to=cloudstore.apps.api.models.file.get_thumbnail_filename),
         ),
-        migrations.AlterField(
-            model_name='file',
-            name='file',
-            field=private_storage.fields.PrivateFileField(blank=True, null=True, storage=private_storage.storage.files.PrivateFileSystemStorage(
-            ), upload_to=cloudstore.apps.api.models.file.get_filename),
-        ),
     ]
