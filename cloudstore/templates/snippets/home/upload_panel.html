@@ -1,0 +1,51 @@
+{% verbatim %}
+
+<article v-cloak v-if="upload_queue.uploading.length + upload_queue.completed.length > 0" id="upload-panel" class="panel is-primary has-shadow has-background-black-ter">
+    <div class="panel-heading is-flex">
+        <div v-if="upload_queue.uploading.length > 0" class="is-flex">
+            <p class="mr-2">
+                Uploading {{ `${upload_queue.uploading.length} file${upload_queue.uploading.length === 1 ? '' : 's'}` }}
+            </p>
+            <a @click="abortAll"
+               class="panel-icon is-medium"
+               data-tooltip="Cancel all">
+                <i class="fas fa-lg fa-times"></i>
+            </a>
+        </div>
+        <div v-else class="is-flex">
+            <p class="mr-2">
+                Completed
+            </p>
+            <a @click="upload_queue.completed = []"
+               class="panel-icon is-medium"
+               data-tooltip="Done">
+                <i class="fas fa-lg fa-check"></i>
+            </a>
+        </div>
+    </div>
+    <div class="panel-block-container">
+        <div v-for="file in upload_queue.uploading.slice().sort((a, b) => b.progress - a.progress)"
+             class="panel-block is-block">
+            <div class="panel-block-title is-flex mx-2 my-2">
+                <span class="panel-icon is-medium has-text-primary">
+                    <i class="fas fa-lg fa-file"></i>
+                </span>
+                <h5 class="title is-5 has-text-primary has-text-weight-bold mb-0">
+                    {{ file.name }}
+                </h5>
+                <a @click="file.xhr.abort()"
+                   class="panel-icon is-medium has-text-primary">
+                    <i class="far fa-lg fa-times-circle"></i>
+                </a>
+            </div>
+            <progress :value="file.progress" class="progress is-primary" max="100"></progress>
+        </div>
+    </div>
+    <div v-if="upload_queue.completed.length" class="panel-block px-4 py-3">
+        <h5 class="title is-5 has-text-primary has-text-weight-bold">
+            {{ `${upload_queue.completed.length} file${upload_queue.completed.length === 1 ? '' : 's'}` }} uploaded
+        </h5>
+    </div>
+</article>
+
+{% endverbatim %}

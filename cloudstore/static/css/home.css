@@ -1,3 +1,7 @@
+::-webkit-progress-value {
+    transition: width 400ms;
+}
+
 main {
     min-height: calc(100vh - 3.25rem);
 }
@@ -114,10 +118,46 @@ main {
     background: rgba(204, 23, 80, 0.1);
 }
 
-.divider {
-    user-select: none;
-}
-
 #homebar .level > * {
     flex-basis: 50%;
+}
+
+#upload-panel {
+    position: fixed;
+    z-index: 100;
+    min-width: 17rem;
+    max-width: min(30rem, calc(100vw - 2rem));
+    left: 1rem;
+    bottom: 2rem;
+}
+
+.panel-heading > div {
+    width: 100%;
+}
+
+.panel-heading > div,
+.panel-block-title {
+    align-items: center;
+}
+
+.panel-block-title > .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 1rem;
+}
+
+.panel-heading > div .panel-icon:last-child,
+.panel-block-title > .panel-icon:last-child {
+    margin-left: auto;
+}
+
+.panel-block-container {
+    max-height: 30vh;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.panel-block-container::-webkit-scrollbar {
+    width: 0;
 }

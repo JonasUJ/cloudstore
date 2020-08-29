@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <section @dragenter="dragenter($event)" id="items-section" class="section pt-4">
+    <section @dragenter="dragenter($event)" id="items-section" class="section pt-4 is-unselectable">
         {% include 'snippets/home/homebar.html' %}
         <input type="hidden" name="pk" value="{{ request.user.pk }}">
         <input type="hidden" name="base_folder" value="{{ request.user.base_folder.pk }}">
@@ -29,6 +29,7 @@
                 {% include 'snippets/home/files.html' %}
             </div>
         </div>
+        {% include 'snippets/home/upload_panel.html' %}
         {% verbatim %}
             <div v-if="dragging" class="drag box content has-background-black-bis">
                 <h4 class="title is-4 has-text-primary mb-0">

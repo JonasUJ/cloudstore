@@ -196,6 +196,7 @@ BULMA_SETTINGS = {
     'extensions': [
         'bulma-checkradio',
         'bulma-divider',
+        'bulma-tooltip',
     ],
     'custom_scss': {
         # 'cloudstore/static/css/base.scss',
@@ -209,7 +210,7 @@ BULMA_SETTINGS = {
 
         'black': 'hsl(0, 0%, 4%)',
         'black-bis': 'hsl(0, 0%, 7%)',
-        'black-ter': 'hsl(0, 0%, 14%)',
+        'black-ter': 'hsl(0, 0%, 10%)',
 
         'dark': '#232022',
         'dark-bis': '#2B272A',
@@ -223,6 +224,10 @@ BULMA_SETTINGS = {
         'scheme-invert-ter': '$black-ter',
 
         'background': '$dark-bis',
+
+        'progress-bar-background-color': '$dark',
+
+        'panel-item-border': '1px solid $dark-bis',
 
         'grey-lighter': 'hsl(0, 0%, 86%)',
         'grey-lightest': 'hsl(0, 0%, 93%)',

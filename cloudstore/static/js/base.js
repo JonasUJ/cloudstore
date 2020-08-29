@@ -1,23 +1,29 @@
-async function fetchData(url = '', data = {}, method = 'POST') {
-    const headers = {
+function headers() {
+    return {
         'X-CSRFToken': get('csrfmiddlewaretoken'),
         'Encoding-Type': 'gzip',
     }
+}
 
+function makeForm(data) {
+    const form = new FormData();
+    for (const key in data) {
+        form.append(key, data[key]);
+    }
+    return form;
+}
+
+async function fetchData(url = '', data = {}, method = 'POST') {
     const request = {
         method: method,
         mode: 'cors',
         cache: 'no-cache',
         credentials: 'same-origin',
-        headers: headers,
+        headers: headers(),
     }
 
     if (method.toLowerCase() != 'get' && method.toLowerCase() != 'head') {
-        let form = new FormData();
-        for (const key in data) {
-            form.append(key, data[key]);
-        }
-        request.body = form;
+        request.body = makeForm(data);
     }
 
     let response = await fetch(url, request);
@@ -30,6 +36,31 @@ async function fetchData(url = '', data = {}, method = 'POST') {
     } catch (e) {
         return '';
     }
+}
+
+function XHRFetch(url = '', data = {}, method = 'POST', onload = () => {}, onprogress = () => {}, onabort = () => {}) {
+    const xhr = new XMLHttpRequest();
+
+    // Add listeners
+    xhr.onload = () => {
+        onload(xhr.response, null);
+    };
+    xhr.onerror = () => {
+        onload(xhr.response, xhr.response);
+    };
+    xhr.upload.onprogress = onprogress;
+    xhr.onabort = onabort;
+
+    xhr.open(method, url);
+
+    // Add headers
+    const head = headers()
+    for (const key in head) {
+        xhr.setRequestHeader(key, head[key]);
+    }
+
+    xhr.send(makeForm(data));
+    return xhr;
 }
 
 const c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'

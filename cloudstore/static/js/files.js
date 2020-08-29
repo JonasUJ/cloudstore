@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', function () {
             dragsrc: null,
             uploading: false,
             type: 'file',
+            upload_queue: {
+                uploading: [],
+                completed: [],
+            },
         },
         methods: {
             typeOf(obj) {
@@ -310,6 +314,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.purge(obj);
                 await fetchData(`/api/${this.typeOf(obj)}s/${obj.id}/`, {}, 'DELETE');
             },
+            abortAll() {
+                this.upload_queue.uploading.slice().forEach(f => f.xhr.abort())
+            },
             async handleFile(file, name, folder) {
                 // If this is a `file` from the API or an entry
                 if (file.hasOwnProperty('id')){
@@ -326,15 +333,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     // .file makes a File object out of the entry
                     file.file(async (f) => {
+
+                        // Add file to the upload queue
+                        const file_upload = {
+                            id: randomString(8),
+                            name: name,
+                            progress: 0,
+                            xhr: null,
+                        }
+                        this.upload_queue.uploading.push(file_upload);
+
                         // Upload the file
-                        const new_file = await fetchData(`/api/files/`, {
+                        file_upload.xhr = XHRFetch('/api/files/', {
                             name: name,
                             folder: folder,
                             file: f,
-                        }, 'POST');
+                        }, 'POST',
+                        (resp, err) => { // onload
+                            if (err) { throw err }
+                            const new_file = JSON.parse(resp);
 
-                        // Cache the new file
-                        this.cacheFile(new_file, folder);
+                            // Cache the new file
+                            this.cacheFile(new_file, folder);
+
+                            // Move file_upload from uploading to completed
+                            this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
+                            this.upload_queue.completed.push(file_upload);
+                        }, (e) => { // onprogress
+                            file_upload.progress = e.loaded / e.total * 100;
+                        }, () => { // onabort
+                            this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
+                        })
                     });
                 }
             },
