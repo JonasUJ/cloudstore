@@ -1,0 +1,35 @@
+{% verbatim %}
+
+<div v-cloak class="modal" :class="{'is-active': edit}">
+    <div class="modal-background" @click="edit = null"></div>
+    <div class="modal-content">
+        <section class="section">
+            <div class="box is-narrow">
+                <div class="field">
+                    <label for="edit-name" class="label is-normal">
+                        Edit name
+                    </label>
+                <div class="field-body">
+                    <div class="field is-expanded">
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input @keydown.enter="editName"
+                                       :value="edit?.name"
+                                       type="input" class="input"
+                                       name="edit-name"
+                                       placeholder="New name"
+                                       id="edit-name">
+                            </div>
+                            <div class="control">
+                                <button @click="editName" class="button">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <button class="modal-close is-large" @click="edit = null"></button>
+</div>
+
+{% endverbatim %}

@@ -109,11 +109,11 @@ main {
     border: 2px solid #CC174F;
 }
 
-#items-section > .container {
+#main-container {
     min-height: 50vh;
 }
 
-#items-section > .container.is-active:not(.is-disabled) {
+#main-container.is-active:not(.is-disabled) {
     outline: 2px solid #CC174F;
     background: rgba(204, 23, 80, 0.1);
 }

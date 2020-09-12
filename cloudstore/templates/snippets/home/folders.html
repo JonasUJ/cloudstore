@@ -1,21 +1,23 @@
 {% verbatim %}
 
 <div v-cloak
-     v-for="_folder in folders"
+     v-for="_folder in sortedFolders"
      :key="_folder.id"
      @keyup.delete="deleteObj(_folder)"
      class="folder column is-full-mobile is-6-tablet is-4-desktop is-3-widescreen is-one-fifth-fullhd is-2">
     <figure>
-        <a @dblclick="openFolder(_folder.id)" @click.prevent href="">
+        <a @dblclick="openFolder(_folder.id)"
+           @focusin="verify(_folder, folder.id); target = _folder"
+           @focusout="target = target === _folder ? null : target"
+           tabindex="0">
             <div @dragstart="drag($event, _folder, 'folder')"
                  @dragend="dragend($event, _folder, folder.id)"
                  @dragenter.stop="dragenter($event)"
                  @dragover.prevent="$event.dataTransfer.dropEffect = 'move'"
                  @drop.stop.prevent="drop($event, _folder)"
-                 @click="verify(_folder, folder.id)"
                  :class="{'is-disabled': dragging}"
                  draggable="true"
-                 class="box has-background-black-bis has-shadow">
+                 class="box has-background-black-bis">
                 <h4 class="title is-4 has-text-primary">
                     <span class="icon mr-2">
                         <i class="far fa-folder"></i>

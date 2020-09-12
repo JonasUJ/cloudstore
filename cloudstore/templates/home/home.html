@@ -19,6 +19,7 @@
              @dragover.prevent="$event.dataTransfer.dropEffect = 'move'"
              @drop.stop.prevent="drop($event, folder)"
              :class="{'is-disabled': dragging}"
+             id="main-container"
              class="container">
             <div v-if="folders.length" v-cloak class="divider">FOLDERS</div>
             <div v-if="folders.length" v-cloak id="folders" class="items columns is-multiline">
@@ -30,6 +31,7 @@
             </div>
         </div>
         {% include 'snippets/home/upload_panel.html' %}
+        {% include 'snippets/home/modal.html' %}
         {% verbatim %}
             <div v-if="dragging" class="drag box content has-background-black-bis">
                 <h4 class="title is-4 has-text-primary mb-0">

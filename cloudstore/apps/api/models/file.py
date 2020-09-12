@@ -56,6 +56,9 @@ class File(models.Model):
     def clean_name(self) -> str:
         return os.path.splitext(self.name)[0]
 
+    def size(self) -> int:
+        return self.file.file.size
+
     def generate_thumbnail(self):
         ext = self.ext().strip('.').upper()
         if ext == 'JPG':

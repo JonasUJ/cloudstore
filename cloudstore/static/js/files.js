@@ -6,8 +6,13 @@ document.addEventListener('DOMContentLoaded', function () {
             user: null,
             files: [],
             folders: [],
+            sorting: 'Name',
+            sortingTypes: ['Name', 'Size', 'Date'],
+            ascending: true,
             breadcrumb: [],
             folder: false,
+            target: null,
+            edit: null,
             dragging: false,
             dragcur: null,
             dragsrc: null,
@@ -16,6 +21,14 @@ document.addEventListener('DOMContentLoaded', function () {
             upload_queue: {
                 uploading: [],
                 completed: [],
+            },
+        },
+        computed: {
+            sortedFiles: function () {
+                return this.sorted(this.files, this.sorting, this.ascending);
+            },
+            sortedFolders: function () {
+                return this.sorted(this.folders, this.sorting, this.ascending);
             },
         },
         methods: {
@@ -29,6 +42,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (index >= 0) {
                     arr.splice(index, 1);
                 }
+            },
+            direction: (bool, asc) => (bool * 2 - 1) * (asc * 2 - 1),
+            sorted(list, key, ascending) {
+                let res;
+                let type;
+
+                if (list[0]) {
+                    type = this.typeOf(list[0]);
+                } else {
+                    return list.slice();
+                }
+
+                if (key === 'Name') {
+                    res = list.slice().sort((a, b) => this.direction(a.name.toUpperCase() > b.name.toUpperCase(), ascending));
+                } else if (key === 'Size') {
+                    if (type === 'file') {
+                        res = list.slice().sort((a, b) => this.direction(a.size > b.size, ascending));
+                    } else {
+                        res = list.slice().sort((a, b) => this.direction(a.files.length + a.folders.length > b.files.length + b.folders.length, ascending));
+                    }
+                } else if (key === 'Date') {
+                    res = list.slice().sort((a, b) => this.direction(Date.parse(a.accessed) > Date.parse(b.accessed), ascending));
+                } else {
+                    res = list.slice();
+                }
+
+                return res;
             },
             purge(obj) {
                 if (this.typeOf(obj) === 'file') {
@@ -405,6 +445,15 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
                     });
+                }
+            },
+            async editName() {
+                if (this.typeOf(this.edit) === 'file') {
+                    await this.handleFile(this.edit, get('edit-name'), this.edit.folder)
+                    this.edit = null;
+                } else {
+                    await this.handleFolder(this.edit, get('edit-name'), this.edit.folder)
+                    this.edit = null;
                 }
             },
             // Debug logging for use in the templates

@@ -1,51 +1,95 @@
 {% verbatim %}
 
-<nav id="homebar" class="level">
-    <div class="container">
-        <nav class="level">
+<div id="homebar" class="container">
+    <nav class="level">
+        <div class="level-left">
+            <nav v-if="breadcrumb.length > 1" v-cloak class="breadcrumb">
+                <ul>
+                    <li v-for="(_folder, key) in breadcrumb.slice().reverse()"
+                        :class="{'is-active': key + 1 === breadcrumb.length}">
+                        <a @click="openFolder(_folder.id)"
+                        @click.prevent
+                        @dragenter.stop="dragenter($event)"
+                        @dragover.prevent="$event.dataTransfer.dropEffect = 'move'"
+                        @drop.stop.prevent="drop($event, _folder)"
+                        href="">
+                            {{ _folder.name }}
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
 
-            <div class="level-left">
-                <nav v-if="breadcrumb.length > 1" v-cloak class="breadcrumb">
-                    <ul>
-                        <li v-for="(_folder, key) in breadcrumb.slice().reverse()"
-                            :class="{'is-active': key + 1 === breadcrumb.length}">
-                            <a @click="openFolder(_folder.id)"
-                               @click.prevent
-                               @dragenter.stop="dragenter($event)"
-                               @dragover.prevent="$event.dataTransfer.dropEffect = 'move'"
-                               @drop.stop.prevent="drop($event, _folder)"
-                               href="">
-                                {{ _folder.name }}
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+        <div class="level-right">
+
+            <div class="level-item">
+                <button @mousedown="edit = target"
+                        :class="{'is-hidden': !target}"
+                        class="button has-icons-left is-fullwidth">
+                    <span class="icon">
+                        <i class="fas fa-pen"></i>
+                    </span>
+                    <span>Edit</span>
+                </button>
             </div>
 
-            <div class="level-right">
-
-                <div class="level-item">
-                    <button class="button has-icons-left is-fullwidth">
-                        <span class="icon">
-                            <i class="fas fa-folder"></i>
-                        </span>
-                        <span>New folder</span>
-                    </button>
-                </div>
-
-                <div class="level-item">
-                    <button class="button is-primary has-icons-left is-fullwidth">
-                        <span class="icon">
-                            <i class="fas fa-plus"></i>
-                        </span>
-                        <span>Upload</span>
-                    </button>
-                </div>
-
+            <div class="level-item">
+                <button class="button has-icons-left is-fullwidth">
+                    <span class="icon">
+                        <i class="fas fa-folder"></i>
+                    </span>
+                    <span>New folder</span>
+                </button>
             </div>
 
-        </nav>
-    </div>
-</nav>
+            <div class="level-item">
+                <button class="button is-primary has-icons-left is-fullwidth">
+                    <span class="icon">
+                        <i class="fas fa-plus"></i>
+                    </span>
+                    <span>Upload</span>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+
+    <nav class="level">
+        <div class="level-left"></div>
+        <div class="level-right">
+
+            <div class="level-item">
+                <div class="is-flex">
+                    <div class="dropdown is-right">
+                        <div class="dropdown-trigger">
+                            <button class="button is-dark">
+                                <span v-cloak>{{ sorting }}</span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" role="menu">
+                            <div class="dropdown-content has-background-black-ter">
+                                <a v-for="type in sortingTypes"
+                                   @click="sorting = type"
+                                   :class="{'is-active': type === sorting}"
+                                   class="dropdown-item">
+                                    {{ type }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button @click="ascending = !ascending"
+                            :data-tooltip="'Sorting ' + (ascending ? 'lowest first' : 'highest first')"
+                            class="button is-dark has-icons-left">
+                        <span class="icon">
+                            <i v-if="ascending" class="fas fa-arrow-down"></i>
+                            <i v-else class="fas fa-arrow-up"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
 
 {% endverbatim %}

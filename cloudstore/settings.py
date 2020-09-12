@@ -196,6 +196,7 @@ BULMA_SETTINGS = {
     'extensions': [
         'bulma-checkradio',
         'bulma-divider',
+        'bulma-dropdown',
         'bulma-tooltip',
     ],
     'custom_scss': {
@@ -239,6 +240,8 @@ BULMA_SETTINGS = {
         'text': '$grey-lighter',
         'text-light': '$grey-lightest',
         'text-strong': '$grey-lightest',
+
+        'dropdown-item-hover-color': '$text-strong',
 
         'link': '$primary',
         'link-visited': '#CF3670',

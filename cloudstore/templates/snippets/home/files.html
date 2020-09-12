@@ -1,18 +1,19 @@
 {% verbatim %}
 
 <div v-cloak
-     v-for="file in files"
+     v-for="file in sortedFiles"
      :key="file.id"
      @keyup.delete="deleteObj(file)"
      class="file column is-full-mobile is-6-tablet is-4-desktop is-3-widescreen is-one-fifth-fullhd is-2">
     <figure class="image is-square">
         <div @dragstart="drag($event, file, 'file')"
              @dragend="dragend($event, file, folder.id)"
-             @click="verify(file, folder.id)"
+             @focusin="verify(file, folder.id); target = file"
+             @focusout="target = target === file ? null : target"
              :class="{'is-disabled': dragging}"
              draggable="true"
              tabindex="0"
-             class="box has-shadow has-ratio px-0 py-0">
+             class="box has-ratio px-0 py-0">
             <a @click.prevent href="" tabindex="-1">
                 <div class="card">
                     <div class="card-image">
@@ -32,7 +33,7 @@
                                     <span class="icon mr-2">
                                         <i class="far fa-file"></i>
                                     </span>
-                                    {{ user.settings.show_ext ? file.name : file.clean_name}}
+                                    {{ user.settings.show_ext ? file.name : file.clean_name }}
                                 </h4>
                             </div>
                         </div>
