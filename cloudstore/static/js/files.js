@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     arr.splice(index, 1);
                 }
             },
+            folderSize: (folder) => folder.files.length + folder.folders.length,
             direction: (bool, asc) => (bool * 2 - 1) * (asc * 2 - 1),
             sorted(list, key, ascending) {
                 let res;
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (type === 'file') {
                         res = list.slice().sort((a, b) => this.direction(a.size > b.size, ascending));
                     } else {
-                        res = list.slice().sort((a, b) => this.direction(a.files.length + a.folders.length > b.files.length + b.folders.length, ascending));
+                        res = list.slice().sort((a, b) => this.direction(this.folderSize(a) > this.folderSize(b), ascending));
                     }
                 } else if (key === 'Date') {
                     res = list.slice().sort((a, b) => this.direction(Date.parse(a.accessed) > Date.parse(b.accessed), ascending));
