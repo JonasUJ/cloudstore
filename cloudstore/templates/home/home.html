@@ -21,19 +21,35 @@
              :class="{'is-disabled': dragging}"
              id="main-container"
              class="container">
-            <div v-if="folders.length" v-cloak class="divider">FOLDERS</div>
-            <div v-if="folders.length" v-cloak id="folders" class="items columns is-multiline">
-                {% include 'snippets/home/folders.html' %}
-            </div>
-            <div v-cloak class="divider">FILES</div>
-            <div id="files" class="items columns is-multiline">
-                {% include 'snippets/home/files.html' %}
+            <div :class="{'columns is-multiline': tiles()}"
+                 class="items">
+                <template v-if="tiles()" v-cloak>
+                    <div v-if="folders.length" v-cloak class="divider column is-12">FOLDERS</div>
+                    {% include 'snippets/home/folders.html' %}
+                    <div class="divider column is-12">FILES</div>
+                    {% include 'snippets/home/files.html' %}
+                </template>
+                <template v-else v-cloak>
+                    <table class="table is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th class="has-text-primary">Name</th>
+                                <th class="has-text-primary is-hidden-mobile">Date</th>
+                                <th class="has-text-primary is-hidden-mobile">Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% include 'snippets/home/folders.html' %}
+                            {% include 'snippets/home/files.html' %}
+                        </tbody>
+                    </table>
+                </template>
             </div>
         </div>
         {% include 'snippets/home/upload_panel.html' %}
         {% include 'snippets/home/modal.html' %}
         {% verbatim %}
-            <div v-if="dragging" class="drag box content has-background-black-bis">
+            <div v-if="dragging && tiles()" class="drag box content has-background-black-bis">
                 <h4 class="title is-4 has-text-primary mb-0">
                     <span class="icon mr-2">
                         <i v-if="type == 'file'" class="far fa-file"></i>
@@ -41,6 +57,14 @@
                     </span>
                     {{ dragging }}
                 </h4>
+            </div>
+            <div v-else-if="dragging" class="drag content pl-2 pt-2 pr-4 pb-3" id="list-drag">
+                <span class="icon mr-2 is-medium">
+                    <i :class="{'fa-file': type === 'file', 'fa-folder': type === 'folder'}" class="fas fa-lg"></i>
+                </span>
+                <span>
+                    {{ dragging }}
+                </span>
             </div>
         {% endverbatim %}
     </section>

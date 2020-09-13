@@ -21,7 +21,6 @@ class AccountView(LoginRequiredMixin, View):
                                                         'form_password': form_password})
 
     def post(self, request: HttpRequest) -> HttpResponse:
-        print(request.POST)
         form_settings = UserSettingsForm(request.POST,
                                          instance=request.user.settings,
                                          prefix='form_settings')

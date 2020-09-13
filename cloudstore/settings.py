@@ -253,6 +253,8 @@ BULMA_SETTINGS = {
         'button-focus-border-color': '$button-hover-border-color',
         'button-active-border-color': '$button-hover-border-color',
 
+        'table-cell-border': '1px solid $dark-ter',
+
         'navbar-dropdown-item-hover-color': '$white',
 
         'modal-background-background-color': 'rgba($scheme-invert, 0.5)',

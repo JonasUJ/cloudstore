@@ -6,6 +6,10 @@ main {
     min-height: calc(100vh - 3.25rem);
 }
 
+.items td {
+    vertical-align: middle;
+}
+
 .items * {
     transition-timing-function: ease-out;
     transition-duration: 86ms;
@@ -19,8 +23,19 @@ main {
     transform: translateY(-.5rem);
 }
 
+#list-drag,
+.items tbody > tr:hover,
+.items tbody > tr:focus-within {
+    background-color: #363134;
+    outline: none;
+}
+
 .items > .column > figure:focus-within .box {
     border: 2px solid #CC174F;
+}
+
+.items tbody > tr:focus-within {
+    outline: 2px solid #CC174F;
 }
 
 .items > .folder.column > figure:focus-within .box {
@@ -92,12 +107,19 @@ main {
     animation: 200ms ease-out fadeIn;
 }
 
+tr.file {
+    display: table-row;
+}
+
 #homebar li > a.is-active,
+.items tbody > tr.is-active:not(:focus-within),
 .folder .box.is-active:not(:hover):not(:focus-within) {
     outline: 2px solid #CC174F;
     outline-offset: 8px;
 }
 
+.items tbody > tr.is-disabled:hover,
+.items tbody > tr.is-disabled:focus-within,
 .items > .column > figure:hover .box.is-disabled,
 .items > .column > figure:focus-within .box.is-disabled {
     opacity: 0.5;

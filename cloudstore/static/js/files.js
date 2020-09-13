@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     arr.splice(index, 1);
                 }
             },
+            tiles() {
+                return this.user?.settings.view === 'tiles';
+            },
             folderSize: (folder) => folder.files.length + folder.folders.length,
             direction: (bool, asc) => (bool * 2 - 1) * (asc * 2 - 1),
             sorted(list, key, ascending) {
@@ -64,7 +67,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         res = list.slice().sort((a, b) => this.direction(this.folderSize(a) > this.folderSize(b), ascending));
                     }
                 } else if (key === 'Date') {
-                    res = list.slice().sort((a, b) => this.direction(Date.parse(a.accessed) > Date.parse(b.accessed), ascending));
+                    if (type === 'file') {
+                        res = list.slice().sort((a, b) => this.direction(a.accessed > b.accessed, ascending));
+                    } else {
+                        res = list.slice();
+                    }
                 } else {
                     res = list.slice();
                 }
@@ -218,6 +225,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Get folder and contents
                 const folder = await fetchData(`/api/folders/${this.folder.id}/contents/`, {}, 'GET');
 
+                folder.files.forEach(f => {
+                    f.created = new Date(f.created);
+                    f.accessed = new Date(f.accessed);
+                });
+
                 // Check that we still want to refresh (the user might have navigated elsewhere)
                 if (this.folder.id !== pk) {
                     return;
@@ -367,6 +379,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         folder: folder,
                     }, 'PUT');
 
+                    new_file.created = new Date(new_file.created);
+                    new_file.accessed = new Date(new_file.accessed);
+
                     // Update it in the cache
                     this.purge(file);
                     this.cacheFile(new_file, folder);
@@ -456,6 +471,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     await this.handleFolder(this.edit, get('edit-name'), this.edit.folder)
                     this.edit = null;
                 }
+            },
+            async switchView() {
+                let new_view = this.tiles() ? 'list' : 'tiles';
+                this.user.settings.view = new_view;
+
+                // It's ugly, but that's not enough reason to create a new endpoint for it
+                await fetchData('/account/', {
+                    'form_settings-view': new_view,
+                    'form_settings-view_img': this.user.settings.view_img,
+                    'form_settings-show_ext': this.user.settings.show_ext,
+                });
             },
             // Debug logging for use in the templates
             log(any) {

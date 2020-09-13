@@ -4,6 +4,7 @@ from django.forms import (
     BooleanField,
     CharField,
     EmailField,
+    HiddenInput,
     ModelForm,
     PasswordInput,
     TextInput
@@ -16,7 +17,11 @@ from ..models import UserSettings
 class UserSettingsForm(BulmaMixin, ModelForm):
     class Meta:
         model = UserSettings
-        fields = ['view_img', 'show_ext']
+        fields = ['view', 'view_img', 'show_ext']
+
+    view = CharField(
+        widget=HiddenInput()
+    )
 
     view_img = BooleanField(
         label='Images',

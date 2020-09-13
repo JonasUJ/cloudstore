@@ -54,11 +54,11 @@
         </div>
     </nav>
 
-    <nav class="level">
+    <nav class="level is-mobile">
         <div class="level-left"></div>
         <div class="level-right">
 
-            <div class="level-item">
+            <div class="level-item is-narrow">
                 <div class="is-flex">
                     <div class="dropdown is-right">
                         <div class="dropdown-trigger">
@@ -88,6 +88,18 @@
                     </button>
                 </div>
             </div>
+
+            <div class="level-item is-narrow">
+                <button @click="switchView"
+                        :data-tooltip="'Viewing ' + (tiles() ? 'tiles' : 'list')"
+                        class="button is-dark has-icons-left">
+                    <span class="icon">
+                        <i v-if="tiles()" class="fas fa-th"></i>
+                        <i v-else class="fas fa-th-list"></i>
+                    </span>
+                </button>
+            </div>
+
         </div>
     </nav>
 </div>

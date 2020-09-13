@@ -1,64 +1,91 @@
 {% verbatim %}
 
-<div v-cloak
-     v-for="file in sortedFiles"
-     :key="file.id"
-     @keyup.delete="deleteObj(file)"
-     class="file column is-full-mobile is-6-tablet is-4-desktop is-3-widescreen is-one-fifth-fullhd is-2">
-    <figure class="image is-square">
-        <div @dragstart="drag($event, file, 'file')"
-             @dragend="dragend($event, file, folder.id)"
-             @focusin="verify(file, folder.id); target = file"
-             @focusout="target = target === file ? null : target"
-             :class="{'is-disabled': dragging}"
-             draggable="true"
-             tabindex="0"
-             class="box has-ratio px-0 py-0">
-            <a @click.prevent href="" tabindex="-1">
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="image is-square">
-                            <span class="icon file-icon has-background-black-bis">
-                                <span :class="getIconClass(file.ext)" class="fiv-viv"></span>
-                            </span>
-                            <img @load="$event.target.style.opacity = 1"
-                                 :src="file.thumb || file.file"
-                                 v-if="user.settings.view_img && isDisplayable(file.ext)">
-                        </figure>
-                    </div>
-                    <div class="card-content-footer has-background-black-bis">
-                        <div class="card-content">
-                            <div class="content">
-                                <h4 class="title is-4 has-text-primary mb-0">
-                                    <span class="icon mr-2">
-                                        <i class="far fa-file"></i>
-                                    </span>
-                                    {{ user.settings.show_ext ? file.name : file.clean_name }}
-                                </h4>
-                            </div>
+<template v-cloak v-if="tiles()">
+    <div v-for="file in sortedFiles"
+         :key="file.id"
+         @keyup.delete="deleteObj(file)"
+         class="file column is-full-mobile is-6-tablet is-4-desktop is-3-widescreen is-one-fifth-fullhd is-2">
+        <figure class="image is-square">
+            <div @dragstart="drag($event, file, 'file')"
+                 @dragend="dragend($event, file, folder.id)"
+                 @focusin="verify(file, folder.id); target = file"
+                 @focusout="target = target === file ? null : target"
+                 :class="{'is-disabled': dragging}"
+                 draggable="true"
+                 tabindex="0"
+                 class="box has-ratio px-0 py-0">
+                <a @click.prevent href="" tabindex="-1">
+                    <div class="card">
+                        <div class="card-image">
+                            <figure class="image is-square">
+                                <span class="icon file-icon has-background-black-bis">
+                                    <span :class="getIconClass(file.ext)" class="fiv-viv"></span>
+                                </span>
+                                <img @load="$event.target.style.opacity = 1"
+                                     :src="file.thumb || file.file"
+                                     v-if="user.settings.view_img && isDisplayable(file.ext)">
+                            </figure>
                         </div>
-                        <footer class="card-footer">
-                            <a href="#" class="card-footer-item">
-                                <span class="icon">
-                                    <i class="fas fa-share-square"></i>
-                                </span>
-                            </a>
-                            <a :href="file.file" download class="card-footer-item">
-                                <span class="icon">
-                                    <i class="fas fa-download"></i>
-                                </span>
-                            </a>
-                            <a @click="deleteObj(file)" tabindex="0" class="card-footer-item">
-                                <span class="icon">
-                                    <i class="far fa-trash-alt"></i>
-                                </span>
-                            </a>
-                        </footer>
+                        <div class="card-content-footer has-background-black-bis">
+                            <div class="card-content">
+                                <div class="content">
+                                    <h4 class="title is-4 has-text-primary mb-0">
+                                        <span class="icon mr-2">
+                                            <i class="far fa-file"></i>
+                                        </span>
+                                        {{ user.settings.show_ext ? file.name : file.clean_name }}
+                                    </h4>
+                                </div>
+                            </div>
+                            <footer class="card-footer">
+                                <a href="#" class="card-footer-item">
+                                    <span class="icon">
+                                        <i class="fas fa-share-square"></i>
+                                    </span>
+                                </a>
+                                <a :href="file.file" download class="card-footer-item">
+                                    <span class="icon">
+                                        <i class="fas fa-download"></i>
+                                    </span>
+                                </a>
+                                <a @click="deleteObj(file)" tabindex="0" class="card-footer-item">
+                                    <span class="icon">
+                                        <i class="far fa-trash-alt"></i>
+                                    </span>
+                                </a>
+                            </footer>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
-    </figure>
-</div>
+                </a>
+            </div>
+        </figure>
+    </div>
+</template>
+
+<template v-cloak v-else>
+    <tr v-for="file in sortedFiles"
+        :key="file.id"
+        @keyup.delete="deleteObj(file)"
+        @dragstart="drag($event, file, 'file')"
+        @dragend="dragend($event, file, folder.id)"
+        @focusin="verify(file, folder.id); target = file"
+        @focusout="target = target === file ? null : target"
+        :class="{'is-disabled': dragging}"
+        draggable="true"
+        tabindex="0"
+        class="file">
+        <td>
+            <span :class="{'has-text-primary': target !== file}" class="icon mr-2 is-medium">
+                <span class="fas fa-file fa-lg"></span>
+            </span>
+            <span>
+                {{ file.name }}
+            </span>
+        </td>
+        <td class="is-hidden-mobile">{{ file.accessed.toLocaleDateString('en-gb', {day: 'numeric', month: 'short', year: 'numeric'}) }}</td>
+        <td class="has-text-right is-hidden-mobile">{{ file.size | formatBytes }}</td>
+    </tr>
+</template>
+
 
 {% endverbatim %}
