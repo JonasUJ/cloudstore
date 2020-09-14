@@ -33,9 +33,21 @@
                     <table class="table is-fullwidth">
                         <thead>
                             <tr>
-                                <th class="has-text-primary">Name</th>
-                                <th class="has-text-primary is-hidden-mobile">Date</th>
-                                <th class="has-text-primary is-hidden-mobile">Size</th>
+                                <th>
+                                    <button @click="setSorting('Name')" class="button is-dark has-text-primary has-text-weight-bold">
+                                        Name
+                                    </button>
+                                </th>
+                                <th class="is-hidden-mobile">
+                                    <button @click="setSorting('Date')" class="button is-dark has-text-primary has-text-weight-bold">
+                                        Date
+                                    </button>
+                                </th>
+                                <th class="is-hidden-mobile">
+                                    <button @click="setSorting('Size')" class="button is-dark has-text-primary has-text-weight-bold">
+                                        Size
+                                    </button>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>

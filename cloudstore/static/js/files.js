@@ -78,6 +78,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 return res;
             },
+            setSorting(key) {
+                // Switch direction if this key is already selected
+                if (this.sorting === key) {
+                    this.ascending = !this.ascending;
+                }
+                this.sorting = key;
+            },
             purge(obj) {
                 if (this.typeOf(obj) === 'file') {
                     // Files only need to be purged from their parent folder.
