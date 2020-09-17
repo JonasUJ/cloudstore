@@ -43,12 +43,19 @@
             </div>
 
             <div class="level-item">
-                <button class="button is-primary has-icons-left is-fullwidth">
-                    <span class="icon">
-                        <i class="fas fa-plus"></i>
-                    </span>
-                    <span>Upload</span>
-                </button>
+                <div class="file is-primary">
+                    <label class="file-label">
+                        <input @change="[...$event.target.files].forEach(async (f) => await handleFile(f))" multiple class="file-input" type="file" name="file-upload">
+                        <span class="file-cta">
+                            <span class="file-icon">
+                                <i class="fas fa-plus"></i>
+                            </span>
+                            <span class="file-label">
+                                Upload
+                            </span>
+                        </span>
+                    </label>
+                </div>
             </div>
 
         </div>

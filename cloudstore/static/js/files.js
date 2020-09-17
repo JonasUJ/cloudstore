@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
             edit: null,
             modal: {
                 edit: null,
-                newFolder: null,
+                newFolder: null
             },
             dragging: false,
             dragcur: null,
@@ -396,7 +396,44 @@ document.addEventListener('DOMContentLoaded', function () {
             abortAll() {
                 this.upload_queue.uploading.slice().forEach(f => f.xhr.abort())
             },
-            async handleFile(file, name, folder) {
+            async _handle(f, name, folder) {
+                // Add file to the upload queue
+                const file_upload = {
+                    id: randomString(8),
+                    name: name,
+                    progress: 0,
+                    xhr: null,
+                }
+                this.upload_queue.uploading.push(file_upload);
+
+                // Upload the file
+                file_upload.xhr = XHRFetch('/api/files/', {
+                    name: name,
+                    folder: folder,
+                    file: f,
+                }, 'POST',
+                (resp, err) => { // onload
+                    if (err) { throw err }
+                    const new_file = JSON.parse(resp);
+                    new_file.created = new Date(new_file.created);
+                    new_file.accessed = new Date(new_file.accessed);
+
+                    // Cache the new file
+                    this.cacheFile(new_file, folder);
+
+                    // Move file_upload from uploading to completed
+                    this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
+                    this.upload_queue.completed.push(file_upload);
+                }, (e) => { // onprogress
+                    file_upload.progress = e.loaded / e.total * 100;
+                }, () => { // onabort
+                    this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
+                })
+            },
+            async handleFile(file, name = null, folder = null) {
+                name = name ?? file.name;
+                folder = folder ?? this.folder.id;
+
                 // If this is a `file` from the API or an entry
                 if (file.hasOwnProperty('id')){
                     // If it's a `file`, change it's name and move it to the new folder.
@@ -413,40 +450,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.cacheFile(new_file, folder);
 
                 } else {
-                    // .file makes a File object out of the entry
-                    file.file(async (f) => {
 
-                        // Add file to the upload queue
-                        const file_upload = {
-                            id: randomString(8),
-                            name: name,
-                            progress: 0,
-                            xhr: null,
-                        }
-                        this.upload_queue.uploading.push(file_upload);
+                    // We already know it is a file, but not whether it is a File or a FileEntry.
+                    // Only file entries has .isFile and it will be undefined (false) on Files
+                    if (file.isFile) {
+                        // .file makes a File object out of the entry
+                        await file.file(async (f) => await this._handle(f, name, folder));
+                    } else {
+                        await this._handle(file, name, folder);
+                    }
 
-                        // Upload the file
-                        file_upload.xhr = XHRFetch('/api/files/', {
-                            name: name,
-                            folder: folder,
-                            file: f,
-                        }, 'POST',
-                        (resp, err) => { // onload
-                            if (err) { throw err }
-                            const new_file = JSON.parse(resp);
 
-                            // Cache the new file
-                            this.cacheFile(new_file, folder);
-
-                            // Move file_upload from uploading to completed
-                            this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
-                            this.upload_queue.completed.push(file_upload);
-                        }, (e) => { // onprogress
-                            file_upload.progress = e.loaded / e.total * 100;
-                        }, () => { // onabort
-                            this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
-                        })
-                    });
                 }
             },
             async handleFolder(folder, name, parent) {
@@ -500,12 +514,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.modal.newFolder = false;
             },
             async editName() {
-                if (this.typeOf(this.edit) === 'file') {
-                    await this.handleFile(this.edit, get('edit-name'), this.edit.folder)
-                    this.edit = null;
+                if (this.typeOf(this.modal.edit) === 'file') {
+                    await this.handleFile(this.modal.edit, get('edit-name'), this.modal.edit.folder)
+                    this.modal.edit = null;
                 } else {
-                    await this.handleFolder(this.edit, get('edit-name'), this.edit.folder)
-                    this.edit = null;
+                    await this.handleFolder(this.modal.edit, get('edit-name'), this.modal.edit.folder)
+                    this.modal.edit = null;
                 }
             },
             async switchView() {
