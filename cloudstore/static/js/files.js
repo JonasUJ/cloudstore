@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', function () {
             folder: false,
             target: null,
             edit: null,
+            modal: {
+                edit: null,
+                newFolder: null,
+            },
             dragging: false,
             dragcur: null,
             dragsrc: null,
@@ -30,6 +34,15 @@ document.addEventListener('DOMContentLoaded', function () {
             sortedFolders: function () {
                 return this.sorted(this.folders, this.sorting, this.ascending);
             },
+            showModal: function () {
+                // The modal should be shown if any of its properties is true
+                for (let p in this.modal) {
+                    if (this.modal[p]) {
+                        return true;
+                    }
+                }
+                return false;
+            },
         },
         methods: {
             typeOf(obj) {
@@ -45,6 +58,12 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             tiles() {
                 return this.user?.settings.view === 'tiles';
+            },
+            hideModal() {
+                // The modal is hidden if all of its properties is false/null
+                for (let p in this.modal) {
+                    this.modal[p] = null
+                }
             },
             folderSize: (folder) => folder.files.length + folder.folders.length,
             direction: (bool, asc) => (bool * 2 - 1) * (asc * 2 - 1),
@@ -440,7 +459,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }, 'PUT');
 
                     // Update it in the cache
-                    this.purge(folder);
                     this.cacheFolder(new_folder, new_folder.folder);
 
                 } else {
@@ -469,6 +487,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
                 }
+            },
+            async newFolder() {
+                // Create new folder
+                const new_folder = await fetchData('/api/folders/', {
+                    name: get('new-folder'),
+                    folder: this.folder.id,
+                });
+
+                // Cache it after creation
+                this.cacheFolder(new_folder, this.folder.id);
+                this.modal.newFolder = false;
             },
             async editName() {
                 if (this.typeOf(this.edit) === 'file') {

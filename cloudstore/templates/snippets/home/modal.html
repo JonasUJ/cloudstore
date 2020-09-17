@@ -1,9 +1,9 @@
 {% verbatim %}
 
-<div v-cloak class="modal" :class="{'is-active': edit}">
-    <div class="modal-background" @click="edit = null"></div>
+<div v-cloak class="modal" :class="{'is-active': showModal}">
+    <div class="modal-background" @click="hideModal"></div>
     <div class="modal-content">
-        <section class="section">
+        <section v-if="modal.edit" class="section">
             <div class="box is-narrow">
                 <div class="field">
                     <label for="edit-name" class="label is-normal">
@@ -14,7 +14,7 @@
                         <div class="field has-addons">
                             <div class="control is-expanded">
                                 <input @keydown.enter="editName"
-                                       :value="edit?.name"
+                                       :value="modal.edit?.name"
                                        type="input" class="input"
                                        name="edit-name"
                                        placeholder="New name"
@@ -28,8 +28,32 @@
                 </div>
             </div>
         </section>
+        <section v-else-if="modal.newFolder" class="section">
+            <div class="box is-narrow">
+                <div class="field">
+                    <label for="new-folder" class="label is-normal">
+                        New Folder Name
+                    </label>
+                <div class="field-body">
+                    <div class="field is-expanded">
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input @keydown.enter="newFolder"
+                                       type="input" class="input"
+                                       name="new-folder"
+                                       placeholder="Folder Name"
+                                       id="new-folder">
+                            </div>
+                            <div class="control">
+                                <button @click="newFolder" class="button">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
-    <button class="modal-close is-large" @click="edit = null"></button>
+    <button class="modal-close is-large" @click="hideModal"></button>
 </div>
 
 {% endverbatim %}

@@ -22,8 +22,8 @@
 
         <div class="level-right">
 
-            <div class="level-item">
-                <button @mousedown="edit = target"
+            <div v-cloak class="level-item">
+                <button @mousedown="modal.edit = target"
                         :class="{'is-hidden': !target}"
                         class="button has-icons-left is-fullwidth">
                     <span class="icon">
@@ -34,7 +34,7 @@
             </div>
 
             <div class="level-item">
-                <button class="button has-icons-left is-fullwidth">
+                <button @click="modal.newFolder = true" class="button has-icons-left is-fullwidth">
                     <span class="icon">
                         <i class="fas fa-folder"></i>
                     </span>
