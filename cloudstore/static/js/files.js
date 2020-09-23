@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'file',
             upload_queue: {
                 uploading: [],
-                completed: [],
+                completed: 0,
             },
         },
         computed: {
@@ -77,22 +77,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     return list.slice();
                 }
 
-                if (key === 'Name') {
-                    res = list.slice().sort((a, b) => this.direction(a.name.toUpperCase() > b.name.toUpperCase(), ascending));
-                } else if (key === 'Size') {
-                    if (type === 'file') {
-                        res = list.slice().sort((a, b) => this.direction(a.size > b.size, ascending));
-                    } else {
-                        res = list.slice().sort((a, b) => this.direction(this.folderSize(a) > this.folderSize(b), ascending));
-                    }
-                } else if (key === 'Date') {
-                    if (type === 'file') {
-                        res = list.slice().sort((a, b) => this.direction(a.accessed > b.accessed, ascending));
-                    } else {
+                switch (key) {
+                    case 'Name':
+                        res = list.slice().sort((a, b) => this.direction(a.name.toUpperCase() > b.name.toUpperCase(), ascending));
+                        break;
+                    case 'Size':
+                        if (type === 'file') {
+                            res = list.slice().sort((a, b) => this.direction(a.size > b.size, ascending));
+                        } else {
+                            res = list.slice().sort((a, b) => this.direction(this.folderSize(a) > this.folderSize(b), ascending));
+                        }
+                        break;
+                    case 'Date':
+                        if (type === 'file') {
+                            res = list.slice().sort((a, b) => this.direction(a.accessed > b.accessed, ascending));
+                        } else {
+                            res = list.slice();
+                        }
+                        break;
+                    default:
                         res = list.slice();
-                    }
-                } else {
-                    res = list.slice();
+                        break;
                 }
 
                 return res;
@@ -365,24 +370,32 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
                     } else {
-
+                        const tasks = [];
                         for (const item of e.dataTransfer.items) {
                             // Forwards compatibility
                             item.getAsEntry = item.getAsEntry || item.webkitGetAsEntry;
 
                             const entry = item.getAsEntry();
                             if (entry.isFile) {
-                                await this.handleFile(entry, entry.name, folder.id);
+                                tasks.push(async () => {
+                                    await this.handleFile(entry, entry.name, folder.id);
+                                });
                             } else if (entry.isDirectory) {
-                                // We add the parent here because handleFolder dumps the contents
-                                // in the folder we specify, and we don't want it in `folder`.
-                                const parent = await fetchData('/api/folders/', {
-                                    name: entry.name,
-                                    folder: folder.id,
-                                }, 'POST');
-                                this.cacheFolder(parent, folder.id);
-                                await this.handleFolder(entry, entry.name, parent.id);
+                                tasks.push(async () => {
+                                    // We add the parent here because handleFolder dumps the contents
+                                    // in the folder we specify, and we don't want it in `folder`.
+                                    const parent = await fetchData('/api/folders/', {
+                                        name: entry.name,
+                                        folder: folder.id,
+                                    }, 'POST');
+                                    this.cacheFolder(parent, folder.id);
+                                    await this.handleFolder(entry, entry.name, parent.id);
+                                });
                             }
+                        }
+
+                        for (const task of tasks) {
+                            await task();
                         }
                     }
                 }
@@ -394,20 +407,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 await fetchData(`/api/${this.typeOf(obj)}s/${obj.id}/`, {}, 'DELETE');
             },
             abortAll() {
-                this.upload_queue.uploading.slice().forEach(f => f.xhr.abort())
+                this.upload_queue.uploading.slice().forEach(f => f.abort())
             },
-            async _handle(f, name, folder) {
+            async _handle(f, name, folder, folder_upload) {
                 // Add file to the upload queue
                 const file_upload = {
+                    type: 'file',
                     id: randomString(8),
                     name: name,
                     progress: 0,
                     xhr: null,
+                    abort() {
+                        this.xhr.abort();
+                    }
                 }
-                this.upload_queue.uploading.push(file_upload);
 
-                // Upload the file
-                file_upload.xhr = XHRFetch('/api/files/', {
+                if (!folder_upload) {
+                    this.upload_queue.uploading.push(file_upload);
+                }
+
+                // These are used to make the XHR request awaitable.
+                // Maybe they should be move into XHRFetch
+                let onload_resolve;
+                const onload_promise = new Promise((resolve, _reject) => onload_resolve = resolve);
+
+                // Closure that uploads the file
+                const xhrfetch = () => XHRFetch('/api/files/', {
                     name: name,
                     folder: folder,
                     file: f,
@@ -423,14 +448,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Move file_upload from uploading to completed
                     this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
-                    this.upload_queue.completed.push(file_upload);
+
+                    if (!folder_upload) {
+                        this.upload_queue.completed++;
+                    }
+
+                    // Resolve the onload_promise Promise
+                    onload_resolve();
                 }, (e) => { // onprogress
                     file_upload.progress = e.loaded / e.total * 100;
                 }, () => { // onabort
                     this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
-                })
+                });
+
+                if (folder_upload) {
+                    folder_upload.queue.push(async () => {
+                        file_upload.xhr = xhrfetch();
+                        folder_upload.abort_queue.push(file_upload.xhr);
+                        return await onload_promise;
+                    });
+
+                    await folder_upload.count(-1);
+                } else {
+                    file_upload.xhr = xhrfetch();
+                }
             },
-            async handleFile(file, name = null, folder = null) {
+            async handleFile(file, name = null, folder = null, folder_upload = null) {
                 name = name ?? file.name;
                 folder = folder ?? this.folder.id;
 
@@ -455,15 +498,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Only file entries has .isFile and it will be undefined (false) on Files
                     if (file.isFile) {
                         // .file makes a File object out of the entry
-                        await file.file(async (f) => await this._handle(f, name, folder));
+                        file.file(async (f) => await this._handle(f, name, folder, folder_upload));
                     } else {
-                        await this._handle(file, name, folder);
+                        await this._handle(file, name, folder, folder_upload);
                     }
-
-
                 }
             },
-            async handleFolder(folder, name, parent) {
+            async handleFolder(folder, name, parent, folder_upload = null) {
                 // If this is a `folder` from the API or an entry
                 if (folder.hasOwnProperty('id')) {
                     // Update it through the API
@@ -476,30 +517,110 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.cacheFolder(new_folder, new_folder.folder);
 
                 } else {
+
+                    // Object used for delaying file uploads until all entries have been read
+                    if (!folder_upload) {
+                        folder_upload = {
+                            type: 'folder',
+                            id: randomString(8),
+                            name: name,
+
+                            _chunk_size: 50,
+                            progress: 0,
+
+                            queue: [],
+                            counting: true,
+                            oncounted: async () => {},
+                            _count: 0,
+                            async count(value) {
+                                this._count += value;
+                                if (this._count <= 0) {
+                                    this.counting = false;
+                                    await this.oncounted();
+                                }
+                            },
+
+                            async upload() {
+                                // Split the queue into chunks.
+                                // Chrome explodes with net::ERR_INSUFFICIENT_RESOURCES
+                                // if we start too many simultaneous requests.
+                                for (const c of chunk(this.queue, this._chunk_size)) {
+                                    // Wait for all promises in the chunk to finish
+                                    // before looping to next iteration.
+                                    await Promise.all(c.map(f => f()));
+
+                                    if (this._abort) break;
+
+                                    this.progress += this._chunk_size / this.queue.length * 100;
+                                }
+                            },
+
+                            _abort: false,
+                            onabort: () => {},
+                            abort_queue: [],
+                            abort() {
+                                this._abort = true;
+                                for (const xhr of this.abort_queue) {
+                                    xhr.abort();
+                                }
+
+                                this.onabort();
+                            },
+                        };
+
+                        folder_upload.oncounted = async () => {
+                            await folder_upload.upload();
+                            this.upload_queue.completed++;
+                            this.removeFrom(folder_upload, this.upload_queue.uploading, o => o.id);
+                        };
+                        folder_upload.onabort = () => this.removeFrom(folder_upload, this.upload_queue.uploading, o => o.id);
+
+                        this.upload_queue.uploading.push(folder_upload);
+                    }
+
                     // Read the entries of the folder entry
                     let reader = folder.createReader();
-                    reader.readEntries(async (entries) => {
 
-                        for (const entry of entries) {
-                            if (entry.isFile) {
-                                await this.handleFile(entry, entry.name, parent);
+                    // This function exists to allow recursive calls to readEntries.
+                    // We want this because each call only gives us 100 entries.
+                    const read = async () => {
+                        await folder_upload.count(1);
+                        reader.readEntries(async (entries) => {
+                            for (const entry of entries) {
 
-                            } else if (entry.isDirectory) {
-                                // If it is a folder we want to create a folder for it
-                                // and pass it to handleFolder again to recursivly unpack the entry
-                                const nested_folder = await fetchData('/api/folders/', {
-                                    name: entry.name,
-                                    folder: parent,
-                                }, 'POST');
+                                // Stop if the upload has been aborted
+                                if (folder_upload._abort) return;
 
-                                // Cache the new folder under the parent
-                                this.cacheFolder(nested_folder, parent);
+                                if (entry.isFile) {
+                                    await folder_upload.count(1);
+                                    await this.handleFile(entry, entry.name, parent, folder_upload);
 
-                                // Recursive call
-                                await this.handleFolder(entry, entry.name, nested_folder.id)
+                                } else if (entry.isDirectory) {
+                                    // If it is a folder we want to create a folder for it
+                                    // and pass it to handleFolder again to recursivly unpack the entry
+                                    const nested_folder = await fetchData('/api/folders/', {
+                                        name: entry.name,
+                                        folder: parent,
+                                    }, 'POST');
+
+                                    // Cache the new folder under the parent
+                                    this.cacheFolder(nested_folder, parent);
+
+                                    // Recursive call
+                                    await this.handleFolder(entry, entry.name, nested_folder.id, folder_upload);
+                                }
                             }
-                        }
-                    });
+
+                            if (entries.length) {
+                                // Read the next batch of entries
+                                await read();
+                            }
+
+                            await folder_upload.count(-1);
+                        });
+                    }
+
+                    await read();
                 }
             },
             async newFolder() {
@@ -568,7 +689,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     // We want to warn the user if they leave the page while an upload is in progress
     window.addEventListener('beforeunload', (event) => {
-        if (files_app.uploading) {
+        if (files_app.upload_queue.uploading.length) {
             event.preventDefault();
             event.returnValue = '';
         } else {
