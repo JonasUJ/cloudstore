@@ -451,6 +451,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (!folder_upload) {
                         this.upload_queue.completed++;
+                    } else {
+                        folder_upload._progress++;
                     }
 
                     // Resolve the onload_promise Promise
@@ -526,7 +528,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             name: name,
 
                             _chunk_size: 50,
-                            progress: 0,
+                            _progress: 0,
+                            get progress() {
+                                return this._progress / this.queue.length * 100;
+                            },
 
                             queue: [],
                             counting: true,
@@ -550,8 +555,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                     await Promise.all(c.map(f => f()));
 
                                     if (this._abort) break;
-
-                                    this.progress += this._chunk_size / this.queue.length * 100;
                                 }
                             },
 
