@@ -101,18 +101,19 @@ function get(name) {
 }
 
 // Modified Lodash _.chunk() from https://github.com/lodash/lodash/blob/master/chunk.js
-function chunk(array, size = 1) {
+function chunk(set, size = 1) {
 
-    if (!array.length || size < 1) {
+    if (!set.size || size < 1) {
       return []
     }
 
     let index = 0
     let resIndex = 0
-    const result = new Array(Math.ceil(array.length / size))
+    const result = new Array(Math.ceil(set.size / size))
+    const array = [...set];
 
-    while (index < array.length) {
-      result[resIndex++] = array.slice(index, (index += size))
+    while (index < set.size) {
+        result[resIndex++] = array.slice(index, (index += size))
     }
     return result
 }

@@ -24,8 +24,7 @@
         </div>
     </div>
     <div class="panel-block-container">
-        <div v-for="item in upload_queue.uploading.slice(0, 20).sort((a, b) => b.progress - a.progress)"
-             class="panel-block is-block">
+        <div v-for="item in sortedUploading" :key="item.id" class="panel-block is-block">
 
             <div v-if="item.type === 'file'" class="panel-block-title is-flex mx-2 my-2">
                 <span class="panel-icon is-medium has-text-primary">
@@ -46,7 +45,7 @@
                 <h5 class="title is-5 has-text-primary has-text-weight-bold mb-0">
                     {{ item.name }}
                     <span class="is-size-6">
-                        ({{ item._progress }} of {{ item.queue.length }})
+                        ({{ item._progress }} of {{ item.size }})
                     </span>
                 </h5>
                 <a @click="item.abort()" class="panel-icon is-medium has-text-primary">

@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return false;
             },
+            sortedUploading: function () {
+                return this.upload_queue.uploading.slice(0, 20).sort((a, b) => b.progress - a.progress);
+            },
         },
         methods: {
             typeOf(obj) {
@@ -407,7 +410,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 await fetchData(`/api/${this.typeOf(obj)}s/${obj.id}/`, {}, 'DELETE');
             },
             abortAll() {
-                this.upload_queue.uploading.slice().forEach(f => f.abort())
+                this.upload_queue.uploading.forEach(f => f.abort())
             },
             async _handle(f, name, folder, folder_upload) {
                 // Add file to the upload queue
@@ -446,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Cache the new file
                     this.cacheFile(new_file, folder);
 
-                    // Move file_upload from uploading to completed
+                    // Remove file_upload from uploading
                     this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
 
                     if (!folder_upload) {
@@ -464,9 +467,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 if (folder_upload) {
-                    folder_upload.queue.push(async () => {
+                    folder_upload.add(async () => {
                         file_upload.xhr = xhrfetch();
-                        folder_upload.abort_queue.push(file_upload.xhr);
+                        folder_upload.abort_queue.add(file_upload.xhr);
                         return await onload_promise;
                     });
 
@@ -530,10 +533,19 @@ document.addEventListener('DOMContentLoaded', function () {
                             _chunk_size: 50,
                             _progress: 0,
                             get progress() {
-                                return this._progress / this.queue.length * 100;
+                                return this._progress / this.size * 100;
                             },
 
-                            queue: [],
+                            _size: 0,
+                            get size() {
+                                return this._size;
+                            },
+                            _queue: new Set(),
+                            add(file_upload) {
+                                this._size++;
+                                this._queue.add(file_upload);
+                            },
+
                             counting: true,
                             oncounted: async () => {},
                             _count: 0,
@@ -549,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 // Split the queue into chunks.
                                 // Chrome explodes with net::ERR_INSUFFICIENT_RESOURCES
                                 // if we start too many simultaneous requests.
-                                for (const c of chunk(this.queue, this._chunk_size)) {
+                                for (const c of chunk(this._queue, this._chunk_size)) {
                                     // Wait for all promises in the chunk to finish
                                     // before looping to next iteration.
                                     await Promise.all(c.map(f => f()));
@@ -560,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                             _abort: false,
                             onabort: () => {},
-                            abort_queue: [],
+                            abort_queue: new Set(),
                             abort() {
                                 this._abort = true;
                                 for (const xhr of this.abort_queue) {
