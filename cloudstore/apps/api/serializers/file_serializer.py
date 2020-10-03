@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models import File
+from ..models import File, Folder
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -23,3 +23,15 @@ class FileSerializer(serializers.ModelSerializer):
             self.fields['file'].required = False
             self.fields['folder'].required = False
         super().__init__(*args, **kwargs)
+        self.context['data'] = kwargs.get('data')
+
+    def validate_name(self, name):
+        parent = self.context['data']['folder']
+
+        if Folder.objects.filter(folder=parent, name=name).exists() or \
+           File.objects.filter(folder=parent, name=name).exists():
+            raise serializers.ValidationError(
+                'File cannot have the same name as an item in its parent'
+            )
+
+        return name

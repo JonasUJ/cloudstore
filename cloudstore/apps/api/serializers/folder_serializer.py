@@ -19,6 +19,18 @@ class FolderSerializer(serializers.ModelSerializer):
         request = kwargs['context']['request']
         self.fields['folder'].queryset = self.fields['folder'].queryset.filter(owner=request.user)
         super().__init__(*args, **kwargs)
+        self.context['data'] = kwargs.get('data')
+
+    def validate_name(self, name):
+        parent = self.context['data']['folder']
+
+        if Folder.objects.filter(folder=parent, name=name).exists() or \
+           File.objects.filter(folder=parent, name=name).exists():
+            raise serializers.ValidationError(
+                'Folder cannot have the same name as an item in its parent'
+            )
+
+        return name
 
     def validate_folder(self, folder):
         folder_pk = self.context.get('pk', False)
