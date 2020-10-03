@@ -1,3 +1,5 @@
+import os.path
+
 from rest_framework import serializers
 
 from ..models import File, Folder
@@ -30,8 +32,13 @@ class FileSerializer(serializers.ModelSerializer):
 
         if Folder.objects.filter(folder=parent, name=name).exists() or \
            File.objects.filter(folder=parent, name=name).exists():
-            raise serializers.ValidationError(
-                'File cannot have the same name as an item in its parent'
-            )
+            i = 2
+            base, ext = os.path.splitext(name)
+            new_name = f'{base} ({i}){ext}'
+            while Folder.objects.filter(folder=parent, name=new_name).exists() or \
+                    File.objects.filter(folder=parent, name=new_name).exists():
+                i += 1
+                new_name = f'{base} ({i}){ext}'
+            name = new_name
 
         return name

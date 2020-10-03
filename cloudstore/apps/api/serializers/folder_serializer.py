@@ -26,9 +26,13 @@ class FolderSerializer(serializers.ModelSerializer):
 
         if Folder.objects.filter(folder=parent, name=name).exists() or \
            File.objects.filter(folder=parent, name=name).exists():
-            raise serializers.ValidationError(
-                'Folder cannot have the same name as an item in its parent'
-            )
+            i = 2
+            new_name = f'{name} ({i})'
+            while Folder.objects.filter(folder=parent, name=new_name).exists() or \
+                    File.objects.filter(folder=parent, name=new_name).exists():
+                i += 1
+                new_name = f'{name} ({i})'
+            name = new_name
 
         return name
 
