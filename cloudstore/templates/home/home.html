@@ -21,7 +21,8 @@
              :class="{'is-disabled': dragging}"
              id="main-container"
              class="container">
-            <div :class="{'columns is-multiline': tiles()}"
+            <div v-if="user"
+                 :class="{'columns is-multiline': tiles()}"
                  class="items">
                 <template v-if="tiles()" v-cloak>
                     <div v-if="folders.length" v-cloak class="divider column is-12">FOLDERS</div>
