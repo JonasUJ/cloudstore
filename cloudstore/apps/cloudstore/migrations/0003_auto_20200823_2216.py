@@ -15,7 +15,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='cloudstoreuser',
             name='base_folder',
-            field=models.ForeignKey(default=None, null=True,
-                                    on_delete=django.db.models.deletion.DO_NOTHING, to='api.Folder'),
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to='api.Folder',
+            ),
         ),
     ]

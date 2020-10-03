@@ -9,15 +9,15 @@ class CloudstoreSetPasswordForm(BulmaMixin, SetPasswordForm):
         label='New password',
         strip=False,
         widget=PasswordInput(
-            attrs={'autocomplete': 'new-password',
-                   'class': 'has-background-black-bis'}),
+            attrs={'autocomplete': 'new-password', 'class': 'has-background-black-bis'}
+        ),
     )
     new_password2 = CharField(
         label='Confirm new password',
         strip=False,
         widget=PasswordInput(
-            attrs={'autocomplete': 'new-password',
-                   'class': 'has-background-black-bis'}),
+            attrs={'autocomplete': 'new-password', 'class': 'has-background-black-bis'}
+        ),
     )
 
     def __init__(self, *args, **kwargs):

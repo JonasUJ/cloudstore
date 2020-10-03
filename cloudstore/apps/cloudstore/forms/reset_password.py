@@ -8,7 +8,7 @@ class CloudstorePasswordResetForm(BulmaMixin, PasswordResetForm):
     email = EmailField(
         label='Email',
         max_length=254,
-        widget=EmailInput(attrs={'autocomplete': 'email', 'class': 'has-background-black-bis'})
+        widget=EmailInput(attrs={'autocomplete': 'email', 'class': 'has-background-black-bis'}),
     )
 
     def __init__(self, *args, **kwargs):

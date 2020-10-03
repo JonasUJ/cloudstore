@@ -6,13 +6,12 @@ from ..models import File
 
 class Folder(models.Model):
     name = models.CharField(max_length=200)
-    folder = models.ForeignKey('Folder',
-                               blank=True, null=True,
-                               related_name='folders',
-                               on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              related_name='folders',
-                              on_delete=models.CASCADE)
+    folder = models.ForeignKey(
+        'Folder', blank=True, null=True, related_name='folders', on_delete=models.CASCADE
+    )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='folders', on_delete=models.CASCADE
+    )
 
     def deep_contains(self, other):
         """

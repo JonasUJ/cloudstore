@@ -46,9 +46,9 @@ class File(models.Model):
     file = PrivateFileField(upload_to=get_filename)
     thumb = NotRequiredPrivateFileField(upload_to=get_thumbnail_filename, blank=True, null=True)
     folder = models.ForeignKey('Folder', related_name='files', on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              related_name='files',
-                              on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='files', on_delete=models.CASCADE
+    )
 
     def ext(self) -> str:
         return os.path.splitext(self.name)[1]

@@ -25,6 +25,5 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_settings(self, obj):
         return UserSettingsSerializer(
-            UserSettings.objects.get(pk=obj.pk),
-            context=self.context
+            UserSettings.objects.get(pk=obj.pk), context=self.context
         ).data

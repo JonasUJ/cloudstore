@@ -7,14 +7,20 @@ from .bulma_mixin import BulmaMixin
 class LoginForm(BulmaMixin, AuthenticationForm):
     username = UsernameField(
         label='Username',
-        widget=TextInput(attrs={'autofocus': True, 'autocomplete': 'username',
-                                'class': 'has-background-black-bis'}),
+        widget=TextInput(
+            attrs={
+                'autofocus': True,
+                'autocomplete': 'username',
+                'class': 'has-background-black-bis',
+            }
+        ),
     )
     password = CharField(
         label='Password',
         strip=False,
-        widget=PasswordInput(attrs={'autocomplete': 'current-password',
-                                    'class': 'has-background-black-bis'}),
+        widget=PasswordInput(
+            attrs={'autocomplete': 'current-password', 'class': 'has-background-black-bis'}
+        ),
         # NOTE: Can't use reverse() for "/account/password_reset" here
         help_text='<a href="/account/password_reset">I forgot my password</a>',
     )

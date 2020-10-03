@@ -24,12 +24,16 @@ class FolderSerializer(serializers.ModelSerializer):
     def validate_name(self, name):
         parent = self.context['data']['folder']
 
-        if Folder.objects.filter(folder=parent, name=name).exists() or \
-           File.objects.filter(folder=parent, name=name).exists():
+        if (
+            Folder.objects.filter(folder=parent, name=name).exists()
+            or File.objects.filter(folder=parent, name=name).exists()
+        ):
             i = 2
             new_name = f'{name} ({i})'
-            while Folder.objects.filter(folder=parent, name=new_name).exists() or \
-                    File.objects.filter(folder=parent, name=new_name).exists():
+            while (
+                Folder.objects.filter(folder=parent, name=new_name).exists()
+                or File.objects.filter(folder=parent, name=new_name).exists()
+            ):
                 i += 1
                 new_name = f'{name} ({i})'
             name = new_name
@@ -56,9 +60,12 @@ class FolderContentsSerializer(FolderSerializer):
     folders = serializers.SerializerMethodField()
 
     def get_files(self, obj):
-        return [FileSerializer(o, context=self.context).data
-                for o in File.objects.filter(folder=obj.pk)]
+        return [
+            FileSerializer(o, context=self.context).data for o in File.objects.filter(folder=obj.pk)
+        ]
 
     def get_folders(self, obj):
-        return [FolderSerializer(o, context=self.context).data
-                for o in Folder.objects.filter(folder=obj.pk)]
+        return [
+            FolderSerializer(o, context=self.context).data
+            for o in Folder.objects.filter(folder=obj.pk)
+        ]

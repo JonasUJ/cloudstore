@@ -7,7 +7,7 @@ from django.forms import (
     HiddenInput,
     ModelForm,
     PasswordInput,
-    TextInput
+    TextInput,
 )
 
 from .bulma_mixin import BulmaMixin
@@ -19,9 +19,7 @@ class UserSettingsForm(BulmaMixin, ModelForm):
         model = UserSettings
         fields = ['view', 'view_img', 'show_ext']
 
-    view = CharField(
-        widget=HiddenInput()
-    )
+    view = CharField(widget=HiddenInput())
 
     view_img = BooleanField(
         label='Images',
@@ -49,16 +47,12 @@ class UserEditForm(BulmaMixin, ModelForm):
     username = UsernameField(
         label='Username',
         max_length=25,
-        widget=TextInput(
-            attrs={'autocomplete': 'username',
-                   'class': 'has-background-black-bis'}),
+        widget=TextInput(attrs={'autocomplete': 'username', 'class': 'has-background-black-bis'}),
     )
     email = EmailField(
         label='E-mail address',
-        widget=TextInput(
-            attrs={'autocomplete': 'email',
-                   'class': 'has-background-black-bis'}),
-        help_text='Used for password resets'
+        widget=TextInput(attrs={'autocomplete': 'email', 'class': 'has-background-black-bis'}),
+        help_text='Used for password resets',
     )
 
     def __init__(self, *args, **kwargs):
@@ -73,29 +67,29 @@ class CloudstorePasswordChangeForm(BulmaMixin, PasswordChangeForm):
         label='Old password',
         strip=False,
         widget=PasswordInput(
-            attrs={'autocomplete': 'password',
-                   'class': 'has-background-black-bis'}),
+            attrs={'autocomplete': 'password', 'class': 'has-background-black-bis'}
+        ),
     )
     new_password1 = CharField(
         label='New password',
         strip=False,
         widget=PasswordInput(
-            attrs={'autocomplete': 'new-password',
-                   'class': 'has-background-black-bis'}),
+            attrs={'autocomplete': 'new-password', 'class': 'has-background-black-bis'}
+        ),
     )
     new_password2 = CharField(
         label='Confirm new password',
         strip=False,
         widget=PasswordInput(
-            attrs={'autocomplete': 'new-password',
-                   'class': 'has-background-black-bis'}),
+            attrs={'autocomplete': 'new-password', 'class': 'has-background-black-bis'}
+        ),
         help_text='Enter the same password as before, for verification.',
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.update_fields()
-        self.add_attrs(('old_password',
-                        'new_password1',
-                        'new_password2'),
-                       {'icon_left': 'fa-lock', 'is_horizontal': True})
+        self.add_attrs(
+            ('old_password', 'new_password1', 'new_password2'),
+            {'icon_left': 'fa-lock', 'is_horizontal': True},
+        )

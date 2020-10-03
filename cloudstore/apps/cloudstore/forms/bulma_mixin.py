@@ -4,9 +4,9 @@ from django.forms import CheckboxInput, Field
 
 
 class BulmaMixin:
-    '''
+    """
     Mixin for handling Bulma classes in a Form
-    '''
+    """
 
     def update_fields(self):
         for name, field in self.fields.items():

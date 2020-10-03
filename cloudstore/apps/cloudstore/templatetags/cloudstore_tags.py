@@ -6,7 +6,7 @@ from django.conf import settings
 
 register = template.Library()
 
-gr_url = 'https://www.gravatar.com/avatar/'
+GR_URL = 'https://www.gravatar.com/avatar/'
 
 
 @register.filter
@@ -22,7 +22,7 @@ def is_file(field):
 @register.filter
 def gravatar(user, size: int = 32):
     email_hash = md5(user.email.lower().encode('utf-8')).hexdigest()  # nosec
-    return f'{gr_url}{email_hash}?{enc({"s":size,"d":"retro"})}'
+    return f'{GR_URL}{email_hash}?{enc({"s":size,"d":"retro"})}'
 
 
 @register.filter

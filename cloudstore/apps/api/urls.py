@@ -25,11 +25,13 @@ def api(request, _format=None):
 
     list_name = router.routes[0].name
     for prefix, viewset, basename in router.registry:  # noqa pylint: disable=unused-variable
-        api_root_dict[prefix] = reverse('api:' + list_name.format(basename=basename),
-                                        request=request, format=_format)
+        api_root_dict[prefix] = reverse(
+            'api:' + list_name.format(basename=basename), request=request, format=_format
+        )
 
-    api_root_dict['access_tokens'] = reverse('api:access-token-create',
-                                             request=request, format=_format)
+    api_root_dict['access_tokens'] = reverse(
+        'api:access-token-create', request=request, format=_format
+    )
     return Response(api_root_dict)
 
 

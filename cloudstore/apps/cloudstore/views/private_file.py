@@ -29,9 +29,7 @@ class CloudstorePrivateFile(PrivateFile):
         return file
 
     def exists(self):
-        return self.relative_name and \
-            self.storage.exists(self.relative_name) and \
-            self.file.exists()
+        return self.relative_name and self.storage.exists(self.relative_name) and self.file.exists()
 
     @cached_property
     def content_type(self):
@@ -49,7 +47,7 @@ class CloudstorePrivateStorageView(PrivateStorageView):
             thumb=self.thumb,
             request=self.request,
             storage=self.get_storage(),
-            relative_name=self.get_path()
+            relative_name=self.get_path(),
         )
 
     def get_content_disposition_filename(self, private_file):

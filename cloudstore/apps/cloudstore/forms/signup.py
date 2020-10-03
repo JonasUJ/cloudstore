@@ -13,29 +13,30 @@ class SignUpForm(BulmaMixin, UserCreationForm):
         label='Username',
         max_length=25,
         widget=TextInput(
-            attrs={'autofocus': True,
-                   'autocomplete': 'username',
-                   'class': 'has-background-black-bis'}),
+            attrs={
+                'autofocus': True,
+                'autocomplete': 'username',
+                'class': 'has-background-black-bis',
+            }
+        ),
     )
     email = EmailField(
         label='E-mail address',
-        widget=TextInput(
-            attrs={'autocomplete': 'email',
-                   'class': 'has-background-black-bis'}),
+        widget=TextInput(attrs={'autocomplete': 'email', 'class': 'has-background-black-bis'}),
         help_text='Used for password resets',
     )
     password1 = CharField(
         label='Password',
         strip=False,
         widget=PasswordInput(
-            attrs={'autocomplete': 'new-password',
-                   'class': 'has-background-black-bis'}),
+            attrs={'autocomplete': 'new-password', 'class': 'has-background-black-bis'}
+        ),
     )
     password2 = CharField(
         label='Confirm password',
         widget=PasswordInput(
-            attrs={'autocomplete': 'new-password',
-                   'class': 'has-background-black-bis'}),
+            attrs={'autocomplete': 'new-password', 'class': 'has-background-black-bis'}
+        ),
         strip=False,
         help_text='Enter the same password as before, for verification.',
     )

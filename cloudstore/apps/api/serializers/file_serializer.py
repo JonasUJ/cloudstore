@@ -8,12 +8,23 @@ from ..models import File, Folder
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
-        fields = ['id', 'name', 'file', 'size', 'thumb', 'folder',
-                  'owner', 'created', 'accessed', 'clean_name', 'ext']
+        fields = [
+            'id',
+            'name',
+            'file',
+            'size',
+            'thumb',
+            'folder',
+            'owner',
+            'created',
+            'accessed',
+            'clean_name',
+            'ext',
+        ]
         extra_kwargs = {
             'thumb': {'read_only': True},
             'owner': {'read_only': True},
-            'file': {'allow_empty_file': True}
+            'file': {'allow_empty_file': True},
         }
 
     def __init__(self, *args, **kwargs):
@@ -30,13 +41,17 @@ class FileSerializer(serializers.ModelSerializer):
     def validate_name(self, name):
         parent = self.context['data']['folder']
 
-        if Folder.objects.filter(folder=parent, name=name).exists() or \
-           File.objects.filter(folder=parent, name=name).exists():
+        if (
+            Folder.objects.filter(folder=parent, name=name).exists()
+            or File.objects.filter(folder=parent, name=name).exists()
+        ):
             i = 2
             base, ext = os.path.splitext(name)
             new_name = f'{base} ({i}){ext}'
-            while Folder.objects.filter(folder=parent, name=new_name).exists() or \
-                    File.objects.filter(folder=parent, name=new_name).exists():
+            while (
+                Folder.objects.filter(folder=parent, name=new_name).exists()
+                or File.objects.filter(folder=parent, name=new_name).exists()
+            ):
                 i += 1
                 new_name = f'{base} ({i}){ext}'
             name = new_name

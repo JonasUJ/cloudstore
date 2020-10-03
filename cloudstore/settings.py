@@ -20,8 +20,7 @@ DEBUG = int(os.environ.get('DEBUG', default=0))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = os.environ.get(
-    'DJANGO_ALLOWED_HOSTS', 'localhost 127.0.0.1 [::1]').split(' ')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost 127.0.0.1 [::1]').split(' ')
 
 # Application definition
 INSTALLED_APPS = [
@@ -29,14 +28,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'private_storage',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'cloudstore.apps.cloudstore',
     'cloudstore.apps.api',
 ]
@@ -183,11 +180,11 @@ LOGIN_URL = reverse_lazy('cloudstore:login')
 
 # Configure messages to use Bulma classes
 MESSAGE_TAGS = {
-    messages.DEBUG:   'is-light',
-    messages.INFO:    'is-info',
+    messages.DEBUG: 'is-light',
+    messages.INFO: 'is-info',
     messages.SUCCESS: 'is-success',
     messages.WARNING: 'is-warning',
-    messages.ERROR:   'is-danger',
+    messages.ERROR: 'is-danger',
 }
 
 # Custom settings for django-simple-bulma, primarily colors
@@ -204,70 +201,50 @@ BULMA_SETTINGS = {
     },
     'variables': {
         'primary': '#CC174F',
-
         'white': 'hsl(0, 0%, 100%)',
         'white-bis': 'hsl(0, 0%, 98%)',
         'white-ter': 'hsl(0, 0%, 96%)',
-
         'black': 'hsl(0, 0%, 4%)',
         'black-bis': 'hsl(0, 0%, 7%)',
         'black-ter': 'hsl(0, 0%, 10%)',
-
         'dark': '#232022',
         'dark-bis': '#2B272A',
         'dark-ter': '#363134',
-
         'scheme-main': '$dark',
         'scheme-main-bis': '$dark-bis',
         'scheme-main-ter': '$dark-ter',
         'scheme-invert': '$black',
         'scheme-invert-bis': '$black-bis',
         'scheme-invert-ter': '$black-ter',
-
         'background': '$dark-bis',
-
         'progress-bar-background-color': '$dark',
-
         'panel-item-border': '1px solid $dark-bis',
-
         'grey-lighter': 'hsl(0, 0%, 86%)',
         'grey-lightest': 'hsl(0, 0%, 93%)',
-
         'red': '#CC1E1E',
-
         'green': '#3FB067',
-
         'text': '$grey-lighter',
         'text-light': '$grey-lightest',
         'text-strong': '$grey-lightest',
-
         'dropdown-item-hover-color': '$text-strong',
-
         'link': '$primary',
         'link-visited': '#CF3670',
         'link-hover': 'darken($link, 5%)',
         'link-active': '$link-hover',
         'link-focus': '$link-hover',
-
         'button-hover-border-color': '$link-hover',
         'button-focus-border-color': '$button-hover-border-color',
         'button-active-border-color': '$button-hover-border-color',
-
         'table-cell-border': '1px solid $dark-ter',
-
         'navbar-dropdown-item-hover-color': '$white',
-
         'modal-background-background-color': 'rgba($scheme-invert, 0.5)',
-
         'divider-background-color': '$dark-ter',
         'divider-thickness': '2px',
         'divider-font-size': '1rem',
         'divider-color': '$dark-ter',
-
         'footer-padding': '1rem 1.5rem 1rem',
-
         'dimensions': '16 24 32 48 64 96 128 200 256 512',
-    }
+    },
 }
 
 LOGGING = {
@@ -278,20 +255,14 @@ LOGGING = {
             'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
         },
     },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
+    'filters': {'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'}},
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
+            'class': 'django.utils.log.AdminEmailHandler',
         },
-        'console': {
-            'class': 'logging.StreamHandler'
-        },
+        'console': {'class': 'logging.StreamHandler'},
         'logfile': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -312,5 +283,5 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-    }
+    },
 }

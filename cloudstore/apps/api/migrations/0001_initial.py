@@ -20,39 +20,86 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AccessToken',
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
+                    ),
+                ),
                 ('token', models.CharField(max_length=20)),
             ],
         ),
         migrations.CreateModel(
             name='Folder',
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
+                    ),
+                ),
                 ('name', models.CharField(max_length=200)),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                            related_name='folders', to=settings.AUTH_USER_MODEL)),
-                ('parent', models.ForeignKey(default=None, null=True,
-                                             on_delete=django.db.models.deletion.CASCADE, related_name='folders', to='api.Folder')),
+                (
+                    'owner',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='folders',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    'parent',
+                    models.ForeignKey(
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='folders',
+                        to='api.Folder',
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='File',
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
+                    ),
+                ),
                 ('name', models.CharField(max_length=200)),
-                ('uuid', models.CharField(
-                    default=cloudstore.apps.api.models.file.get_uuid, max_length=8, unique=True)),
+                (
+                    'uuid',
+                    models.CharField(
+                        default=cloudstore.apps.api.models.file.get_uuid, max_length=8, unique=True
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('accessed', models.DateTimeField(auto_now=True)),
-                ('file', private_storage.fields.PrivateFileField(storage=private_storage.storage.files.PrivateFileSystemStorage(
-                ), upload_to=cloudstore.apps.api.models.file.get_filename)),
-                ('folder', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                             related_name='files', to='api.Folder')),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                            related_name='files', to=settings.AUTH_USER_MODEL)),
+                (
+                    'file',
+                    private_storage.fields.PrivateFileField(
+                        storage=private_storage.storage.files.PrivateFileSystemStorage(),
+                        upload_to=cloudstore.apps.api.models.file.get_filename,
+                    ),
+                ),
+                (
+                    'folder',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='files',
+                        to='api.Folder',
+                    ),
+                ),
+                (
+                    'owner',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='files',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

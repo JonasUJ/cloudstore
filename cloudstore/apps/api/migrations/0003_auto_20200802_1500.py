@@ -15,6 +15,11 @@ class Migration(migrations.Migration):
             model_name='folder',
             name='parent',
             field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='folders', to='api.Folder'),
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='folders',
+                to='api.Folder',
+            ),
         ),
     ]
