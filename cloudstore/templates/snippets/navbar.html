@@ -39,6 +39,19 @@
             </div>
 
             <div class="navbar-end">
+                <div class="navbar-item is-narrow">
+                    <div class="is-block">
+                        <span v-cloak v-if="shared_state.user" class="mb-1">
+                            {% verbatim %}
+                                {{ formatBytes(shared_state.user?.quota.used, 1) }}
+                                used of
+                                {{ formatBytes(shared_state.user?.quota.allowed, 1) }}
+                            {% endverbatim %}
+                        </span>
+                        <progress class="progress is-small is-primary" :value="shared_state.user?.quota.used / shared_state.user?.quota.allowed" max="1"></progress>
+                    </div>
+                </div>
+
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a href="{% url 'cloudstore:account' %}" class="navbar-link is-flex">
                         <figure class="image is-24x24 mr-2">

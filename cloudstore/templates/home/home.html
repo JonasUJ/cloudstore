@@ -21,7 +21,7 @@
              :class="{'is-disabled': dragging}"
              id="main-container"
              class="container">
-            <div v-if="user"
+            <div v-if="shared_state.user"
                  :class="{'columns is-multiline': tiles()}"
                  class="items">
                 <template v-if="tiles()" v-cloak>

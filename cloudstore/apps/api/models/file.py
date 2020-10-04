@@ -71,6 +71,10 @@ class File(models.Model):
                 img_bytes = BytesIO()
                 img.save(img_bytes, format=ext)
                 self.thumb.save(self.thumb.name, CoreFile(img_bytes))
+
+                # NOTE: Thumbs can currently exceed the quota
+                self.owner.quota.used += self.thumb.file.size
+                self.owner.quota.save()
             except UnidentifiedImageError:
                 pass  # We couldn't open the image, probably because it isn't one.
 
@@ -80,5 +84,13 @@ class File(models.Model):
 
 @receiver(models.signals.post_delete, sender=File)
 def remove_file(sender, instance: File, **kwargs):  # pylint: disable=unused-argument
+    instance.owner.quota.lock.acquire()
+    try:
+        instance.owner.quota.free(instance.size())
+        if instance.thumb:
+            instance.owner.quota.free(instance.thumb.file.size)
+    finally:
+        instance.owner.quota.lock.release()
+
     instance.file.delete(False)
     instance.thumb.delete(False)

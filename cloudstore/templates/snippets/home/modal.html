@@ -55,6 +55,14 @@
             </div>
         </section>
 
+        <section v-else-if="modal.error" class="section">
+            <article class="message is-danger has-background-dark">
+                <div class="message-body has-text-weight-bold">
+                    {{ modal.error }}
+                </div>
+            </article>
+        </section>
+
     </div>
     <button class="modal-close is-large" @click="hideModal"></button>
 </div>

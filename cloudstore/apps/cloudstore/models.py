@@ -1,3 +1,5 @@
+from threading import Lock
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import signals
@@ -20,6 +22,27 @@ class UserSettings(models.Model):
     show_ext = models.BooleanField(default=False)
 
 
+class UserQuota(models.Model):
+    user = models.OneToOneField(CloudstoreUser, on_delete=models.CASCADE, related_name='quota')
+    allowed = models.BigIntegerField(default=0)
+    used = models.BigIntegerField(default=0)
+
+    lock = Lock()
+
+    def _change(self, amount):
+        self.used += amount
+        self.save()
+
+    def use(self, amount):
+        self._change(amount)
+
+    def free(self, amount):
+        self._change(-amount)
+
+    def __str__(self):
+        return f'{self.user}\'s quota ({self.used} / {self.allowed})'
+
+
 @receiver(signals.post_save, sender=CloudstoreUser)
 def user_post_save_receiver(sender, instance, created, **kwargs):  # pylint: disable=unused-argument
     if created:
@@ -28,4 +51,5 @@ def user_post_save_receiver(sender, instance, created, **kwargs):  # pylint: dis
         )
         Token.objects.create(user=instance)
         UserSettings.objects.create(user=instance)
+        UserQuota.objects.create(user=instance)
         instance.save()

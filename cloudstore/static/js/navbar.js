@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
+    if (!document.getElementById('navbar')) {
+        return;
+    }
+
     var nav_app = new Vue({
         el: '#navbar',
         data: {
@@ -6,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
             generatedResponseMessage: '',
             accessTokenModalActive: false,
             navbarActive: false,
+            shared_state: shared_state,
         },
         methods: {
             async generate_access_token() {
@@ -24,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
             copyAccessToken() {
                 copyToClipboard(this.accessToken);
             },
+            formatBytes: formatBytes,
         }
     });
 });

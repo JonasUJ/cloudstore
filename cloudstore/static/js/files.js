@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
         el: '#items-section',
         data: {
             cache: {},
-            user: null,
+            shared_state: shared_state,
             files: [],
             folders: [],
             sorting: 'Name',
@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', function () {
             edit: null,
             modal: {
                 edit: null,
-                newFolder: null
+                newFolder: null,
+                error: null,
             },
             dragging: false,
             dragcur: null,
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             tiles() {
-                return this.user?.settings.view === 'tiles';
+                return this.shared_state.user?.settings.view === 'tiles';
             },
             hideModal() {
                 // The modal is hidden if all of its properties is false/null
@@ -184,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 return true;
             },
-            async setBreadcrumb(folder, _recur=false) {
+            async setBreadcrumb(folder, _recur = false) {
                 // _recur shouldn't be passed from outside.
                 // We clear the breadcrumb so that we can add a new
                 if (!_recur) {
@@ -215,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     await this.setBreadcrumb(parent, true);
                 }
             },
-            async setFolder(pk=null) {
+            async setFolder(pk = null) {
                 let folderpk = pk;
 
                 // Find the pk if none was passed
@@ -281,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Set the folder pk in the url for easy copy/paste
                 const params = new URLSearchParams(location.search);
                 params.set('pk', pk);
-                window.history.pushState({pk:pk}, '', `${location.pathname}?${params.toString()}`);
+                window.history.pushState({ pk: pk }, '', `${location.pathname}?${params.toString()}`);
 
                 // Open the folder with this pk
                 await this.setFolder(pk);
@@ -407,12 +408,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 // We purge it first to give the impression that the operation was instant.
                 // The request will still happen in the background.
                 this.purge(obj);
+
                 await fetchData(`/api/${this.typeOf(obj)}s/${obj.id}/`, {}, 'DELETE');
+
+                // Subtract its size from our quota. This is only done locally because the backend
+                // can handle itself. We get out of sync anyway if files are uploaded from outside
+                // this browser tab instance.
+                if (this.typeOf(obj) === 'file') {
+                    this.shared_state.user.quota.used -= obj.size;
+                } else {
+                    // We might aswell sync when they delete a folder
+                    // We could also have counted all files and files in folders etc.
+                    // but that's a bit excessive
+                    this.shared_state.user = await fetchData(`/api/users/${get('pk')}/`, {}, 'GET')
+                }
             },
             abortAll() {
                 this.upload_queue.uploading.forEach(f => f.abort())
             },
             async _handle(f, name, folder, folder_upload) {
+                // Don't worry, this is also checked in the backend, but we don't
+                // have to wait for the upload this way
+                if (f.size + this.shared_state.user.quota.used > this.shared_state.user.quota.allowed) {
+                    this.modal.error = `Uploading the file '${name}' would exceed your storage limit`;
+                    this.abortAll();
+                    return;
+                } else {
+                    this.shared_state.user.quota.used += f.size;
+                }
+
                 // Add file to the upload queue
                 const file_upload = {
                     type: 'file',
@@ -440,31 +464,40 @@ document.addEventListener('DOMContentLoaded', function () {
                     folder: folder,
                     file: f,
                 }, 'POST',
-                (resp, err) => { // onload
-                    if (err) { throw err }
-                    const new_file = JSON.parse(resp);
-                    new_file.created = new Date(new_file.created);
-                    new_file.accessed = new Date(new_file.accessed);
+                    (resp, xhr) => { // onload
+                        if (xhr.status === 400) {
+                            // It's probably the because the file exceeds their quota.
+                            // This would need a better implementation in the backend,
+                            // but sending a simple custom error code along with the ValidationError
+                            // turned out to be not so trivial because, idk drf internals be broke
 
-                    // Cache the new file
-                    this.cacheFile(new_file, folder);
+                            this.modal.error = `The file '${name}' exceeded your storage limit`;
+                            this.abortAll();
+                        } else {
+                            const new_file = JSON.parse(resp);
+                            new_file.created = new Date(new_file.created);
+                            new_file.accessed = new Date(new_file.accessed);
 
-                    // Remove file_upload from uploading
-                    this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
+                            // Cache the new file
+                            this.cacheFile(new_file, folder);
+                        }
 
-                    if (!folder_upload) {
-                        this.upload_queue.completed++;
-                    } else {
-                        folder_upload._progress++;
-                    }
+                        // Remove file_upload from uploading
+                        this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
 
-                    // Resolve the onload_promise Promise
-                    onload_resolve();
-                }, (e) => { // onprogress
-                    file_upload.progress = e.loaded / e.total * 100;
-                }, () => { // onabort
-                    this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
-                });
+                        if (!folder_upload) {
+                            this.upload_queue.completed++;
+                        } else {
+                            folder_upload._progress++;
+                        }
+
+                        // Resolve the onload_promise Promise
+                        onload_resolve();
+                    }, (e) => { // onprogress
+                        file_upload.progress = e.loaded / e.total * 100;
+                    }, () => { // onabort
+                        this.removeFrom(file_upload, this.upload_queue.uploading, o => o.id);
+                    });
 
                 if (folder_upload) {
                     folder_upload.add(async () => {
@@ -483,7 +516,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 folder = folder ?? this.folder.id;
 
                 // If this is a `file` from the API or an entry
-                if (file.hasOwnProperty('id')){
+                if (file.hasOwnProperty('id')) {
                     // If it's a `file`, change it's name and move it to the new folder.
                     const new_file = await fetchData(`/api/files/${file.id}/`, {
                         name: name,
@@ -547,7 +580,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             },
 
                             counting: true,
-                            oncounted: async () => {},
+                            oncounted: async () => { },
                             _count: 0,
                             async count(value) {
                                 this._count += value;
@@ -571,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             },
 
                             _abort: false,
-                            onabort: () => {},
+                            onabort: () => { },
                             abort_queue: new Set(),
                             abort() {
                                 this._abort = true;
@@ -660,13 +693,13 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             async switchView() {
                 let new_view = this.tiles() ? 'list' : 'tiles';
-                this.user.settings.view = new_view;
+                this.shared_state.user.settings.view = new_view;
 
                 // It's ugly, but that's not enough reason to create a new endpoint for it
                 await fetchData('/account/', {
                     'form_settings-view': new_view,
-                    'form_settings-view_img': this.user.settings.view_img,
-                    'form_settings-show_ext': this.user.settings.show_ext,
+                    'form_settings-view_img': this.shared_state.user.settings.view_img,
+                    'form_settings-show_ext': this.shared_state.user.settings.show_ext,
                 });
             },
             // Debug logging for use in the templates
@@ -679,10 +712,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // If not, open the base folder instead.
             const params = new URLSearchParams(location.search);
             const pk = params.get('pk') || get('base_folder');
-            window.history.replaceState({pk:pk}, '', location.href);
-
-            // Get the current user
-            this.user = await fetchData(`/api/users/${get('pk')}/`, {}, 'GET')
+            window.history.replaceState({ pk: pk }, '', location.href);
 
             // Update page
             await this.setFolder(pk);
@@ -699,7 +729,7 @@ document.addEventListener('DOMContentLoaded', function () {
             await files_app.refresh();
         } else {
             const params = new URLSearchParams(location.search);
-            window.history.replaceState({pk:params.get('pk') || get('base_folder')}, '', location.href);
+            window.history.replaceState({ pk: params.get('pk') || get('base_folder') }, '', location.href);
         }
     });
     // We want to warn the user if they leave the page while an upload is in progress
