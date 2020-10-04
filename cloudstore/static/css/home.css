@@ -183,3 +183,7 @@ tr.file {
 .panel-block-container::-webkit-scrollbar {
     width: 0;
 }
+
+#sync {
+    transition: opacity 400ms;
+}

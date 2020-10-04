@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
             dragcur: null,
             dragsrc: null,
             uploading: false,
+            syncing: 0,
             type: 'file',
             upload_queue: {
                 uploading: [],
@@ -164,11 +165,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Register in cache
                 this.cache[folder.id] = folder;
             },
+            async fetchData(url = '', data = {}, method = 'POST') {
+                // This is a wrapper for the fetchData defined in global
+
+                this.syncing++;
+                try {
+                    return await fetchData(url, data, method);
+                } finally {
+                    this.syncing--;
+                }
+            },
             async verify(obj, parent) {
                 let type = this.typeOf(obj);
                 let new_obj;
                 try {
-                    new_obj = await fetchData(`/api/${type}s/${obj.id}/`, {}, 'GET');
+                    new_obj = await this.fetchData(`/api/${type}s/${obj.id}/`, {}, 'GET');
                 } catch (resp) {
                     // If it was deleted
                     if (resp.status == 404) {
@@ -205,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     const pk = this.folder.id;
                     // It wasn't in the cache meaning we have to fetch it.
-                    const parent = await fetchData(`/api/folders/${folder.folder}/`, {}, 'GET');
+                    const parent = await this.fetchData(`/api/folders/${folder.folder}/`, {}, 'GET');
 
                     // The folder has changed, making this breadcrumb outdated
                     if (pk !== this.folder.id) {
@@ -231,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     try {
                         // Load from API and cache it
-                        this.folder = await fetchData(`/api/folders/${folderpk}/`, {}, 'GET');
+                        this.folder = await this.fetchData(`/api/folders/${folderpk}/`, {}, 'GET');
                         this.cacheFolder(this.folder, this.folder.folder);
                     } catch (resp) {
                         // If a non-200 response status was returned it was probably because
@@ -258,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.folders = this.cache[this.folder.id].folders_cache;;
 
                 // Get folder and contents
-                const folder = await fetchData(`/api/folders/${this.folder.id}/contents/`, {}, 'GET');
+                const folder = await this.fetchData(`/api/folders/${this.folder.id}/contents/`, {}, 'GET');
 
                 folder.files.forEach(f => {
                     f.created = new Date(f.created);
@@ -388,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 tasks.push(async () => {
                                     // We add the parent here because handleFolder dumps the contents
                                     // in the folder we specify, and we don't want it in `folder`.
-                                    const parent = await fetchData('/api/folders/', {
+                                    const parent = await this.fetchData('/api/folders/', {
                                         name: entry.name,
                                         folder: folder.id,
                                     }, 'POST');
@@ -409,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // The request will still happen in the background.
                 this.purge(obj);
 
-                await fetchData(`/api/${this.typeOf(obj)}s/${obj.id}/`, {}, 'DELETE');
+                await this.fetchData(`/api/${this.typeOf(obj)}s/${obj.id}/`, {}, 'DELETE');
 
                 // Subtract its size from our quota. This is only done locally because the backend
                 // can handle itself. We get out of sync anyway if files are uploaded from outside
@@ -420,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // We might aswell sync when they delete a folder
                     // We could also have counted all files and files in folders etc.
                     // but that's a bit excessive
-                    this.shared_state.user = await fetchData(`/api/users/${get('pk')}/`, {}, 'GET')
+                    this.shared_state.user = await this.fetchData(`/api/users/${get('pk')}/`, {}, 'GET')
                 }
             },
             abortAll() {
@@ -518,7 +529,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // If this is a `file` from the API or an entry
                 if (file.hasOwnProperty('id')) {
                     // If it's a `file`, change it's name and move it to the new folder.
-                    const new_file = await fetchData(`/api/files/${file.id}/`, {
+                    const new_file = await this.fetchData(`/api/files/${file.id}/`, {
                         name: name,
                         folder: folder,
                     }, 'PUT');
@@ -546,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // If this is a `folder` from the API or an entry
                 if (folder.hasOwnProperty('id')) {
                     // Update it through the API
-                    const new_folder = await fetchData(`/api/folders/${folder.id}/`, {
+                    const new_folder = await this.fetchData(`/api/folders/${folder.id}/`, {
                         name: name,
                         folder: parent,
                     }, 'PUT');
@@ -646,7 +657,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 } else if (entry.isDirectory) {
                                     // If it is a folder we want to create a folder for it
                                     // and pass it to handleFolder again to recursivly unpack the entry
-                                    const nested_folder = await fetchData('/api/folders/', {
+                                    const nested_folder = await this.fetchData('/api/folders/', {
                                         name: entry.name,
                                         folder: parent,
                                     }, 'POST');
@@ -673,7 +684,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             async newFolder() {
                 // Create new folder
-                const new_folder = await fetchData('/api/folders/', {
+                const new_folder = await this.fetchData('/api/folders/', {
                     name: get('new-folder'),
                     folder: this.folder.id,
                 });
@@ -696,7 +707,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.shared_state.user.settings.view = new_view;
 
                 // It's ugly, but that's not enough reason to create a new endpoint for it
-                await fetchData('/account/', {
+                await this.fetchData('/account/', {
                     'form_settings-view': new_view,
                     'form_settings-view_img': this.shared_state.user.settings.view_img,
                     'form_settings-show_ext': this.shared_state.user.settings.show_ext,

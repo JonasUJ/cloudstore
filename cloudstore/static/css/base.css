@@ -37,5 +37,9 @@ html::-webkit-scrollbar-thumb {
 }
 
 #navbar progress {
-    border: 1px solid black;
+    border: 2px solid #363134;
+}
+
+.is-clear {
+    opacity: 0;
 }

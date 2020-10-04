@@ -66,6 +66,13 @@
         <div class="level-right">
 
             <div class="level-item is-narrow">
+                <span :class="{'is-clear': !syncing}"
+                      id="sync" class="icon">
+                    <i class="fas fa-sync-alt fa-spin"></i>
+                </span>
+            </div>
+
+            <div class="level-item is-narrow">
                 <div class="is-flex">
                     <div class="dropdown is-right">
                         <div class="dropdown-trigger">
