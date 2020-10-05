@@ -23,14 +23,40 @@
         <div class="level-right">
 
             <div v-cloak class="level-item">
-                <button @mousedown="modal.edit = target"
-                        :class="{'is-hidden': !target}"
-                        class="button has-icons-left is-fullwidth">
-                    <span class="icon">
-                        <i class="fas fa-pen"></i>
-                    </span>
-                    <span>Edit</span>
-                </button>
+                <div @mousedown="current_target = target"
+                     @click="current_target = null"
+                     @mouseleave="current_target = null"
+                     :class="{'is-hidden': !target && !current_target}"
+                     class="buttons is-fullwidth has-addons">
+                    <button @click=""
+                            data-tooltip="Share"
+                            class="button is-dark has-icons-left has-tooltip-bottom">
+                        <span class="icon">
+                            <i class="fas fa-share-square"></i>
+                        </span>
+                    </button>
+                    <a @click.capture="download(current_target?.file)"
+                       data-tooltip="Download"
+                       class="button is-dark has-icons-left has-tooltip-bottom">
+                        <span class="icon">
+                            <i class="fas fa-download"></i>
+                        </span>
+                    </a>
+                    <button @click.capture="modal.edit = current_target"
+                            data-tooltip="Edit"
+                            class="button is-dark has-icons-left has-tooltip-bottom">
+                        <span class="icon">
+                            <i class="fas fa-pen"></i>
+                        </span>
+                    </button>
+                    <button @click.capture="deleteObj(current_target)"
+                            data-tooltip="Delete"
+                            class="button is-dark has-icons-left has-tooltip-bottom">
+                        <span class="icon">
+                            <i class="far fa-trash-alt"></i>
+                        </span>
+                    </button>
+                </div>
             </div>
 
             <div class="level-item">

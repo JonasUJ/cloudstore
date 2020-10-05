@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
             breadcrumb: [],
             folder: false,
             target: null,
-            edit: null,
+            current_target: null,
             modal: {
                 edit: null,
                 newFolder: null,
@@ -60,6 +60,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (index >= 0) {
                     arr.splice(index, 1);
                 }
+            },
+            download(uri) {
+                let link = document.createElement('a');
+                link.classList.add('position', 'fixed');
+                link.setAttribute('download', '');
+                link.href = uri;
+                document.body.prepend(link)
+                link.click();
+                link.remove();
             },
             tiles() {
                 return this.shared_state.user?.settings.view === 'tiles';

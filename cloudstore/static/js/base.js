@@ -88,7 +88,7 @@ Vue.filter('formatBytes', formatBytes);
 function copyToClipboard(text) {
     var temp = document.createElement('input');
     temp.classList.add('position', 'fixed');
-    document.getElementsByTagName('body')[0].prepend(temp);
+    document.body.prepend(temp);
     temp.value = text;
     temp.focus();
     temp.select();

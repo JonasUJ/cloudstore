@@ -43,9 +43,14 @@
                                         <i class="fas fa-share-square"></i>
                                     </span>
                                 </a>
-                                <a :href="file.file" download class="card-footer-item">
+                                <a @click="download(file.file)" tabindex="0" class="card-footer-item">
                                     <span class="icon">
                                         <i class="fas fa-download"></i>
+                                    </span>
+                                </a>
+                                <a @click="modal.edit = file" tabindex="0" class="card-footer-item">
+                                    <span class="icon">
+                                        <i class="fas fa-pen"></i>
                                     </span>
                                 </a>
                                 <a @click="deleteObj(file)" tabindex="0" class="card-footer-item">
