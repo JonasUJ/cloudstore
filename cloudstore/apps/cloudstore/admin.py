@@ -9,4 +9,4 @@ admin.site.register(CloudstoreUser, UserAdmin)
 
 @admin.register(UserQuota)
 class UserQuotaAdmin(admin.ModelAdmin):
-    fields = ('allowed',)
+    fields = ('used', 'allowed')

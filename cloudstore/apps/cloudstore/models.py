@@ -1,8 +1,6 @@
-from threading import Lock
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import signals
+from django.db.models import F, signals
 from django.dispatch import receiver
 
 from rest_framework.authtoken.models import Token  # pylint: disable=import-error
@@ -27,10 +25,8 @@ class UserQuota(models.Model):
     allowed = models.BigIntegerField(default=0)
     used = models.BigIntegerField(default=0)
 
-    lock = Lock()
-
     def _change(self, amount):
-        self.used += amount
+        self.used = F('used') + amount
         self.save()
 
     def use(self, amount):

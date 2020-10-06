@@ -44,6 +44,7 @@ class File(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     accessed = models.DateTimeField(auto_now=True)
     file = PrivateFileField(upload_to=get_filename)
+    size = models.BigIntegerField(default=0)
     thumb = NotRequiredPrivateFileField(upload_to=get_thumbnail_filename, blank=True, null=True)
     folder = models.ForeignKey('Folder', related_name='files', on_delete=models.CASCADE)
     owner = models.ForeignKey(
@@ -55,9 +56,6 @@ class File(models.Model):
 
     def clean_name(self) -> str:
         return os.path.splitext(self.name)[0]
-
-    def size(self) -> int:
-        return self.file.file.size
 
     def generate_thumbnail(self):
         ext = self.ext().strip('.').upper()
@@ -73,8 +71,9 @@ class File(models.Model):
                 self.thumb.save(self.thumb.name, CoreFile(img_bytes))
 
                 # NOTE: Thumbs can currently exceed the quota
-                self.owner.quota.used += self.thumb.file.size
-                self.owner.quota.save()
+                self.size += self.thumb.file.size
+                self.save()
+                self.owner.quota.use(self.thumb.file.size)
             except UnidentifiedImageError:
                 pass  # We couldn't open the image, probably because it isn't one.
 
@@ -84,13 +83,6 @@ class File(models.Model):
 
 @receiver(models.signals.post_delete, sender=File)
 def remove_file(sender, instance: File, **kwargs):  # pylint: disable=unused-argument
-    instance.owner.quota.lock.acquire()
-    try:
-        instance.owner.quota.free(instance.size())
-        if instance.thumb:
-            instance.owner.quota.free(instance.thumb.file.size)
-    finally:
-        instance.owner.quota.lock.release()
-
+    instance.owner.quota.free(instance.size)
     instance.file.delete(False)
     instance.thumb.delete(False)

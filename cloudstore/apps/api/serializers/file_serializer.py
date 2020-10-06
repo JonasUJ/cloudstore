@@ -3,7 +3,6 @@ import os.path
 from rest_framework import serializers
 
 from ..models import File, Folder
-from ...cloudstore.models import UserQuota
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -39,19 +38,18 @@ class FileSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         self.context['data'] = kwargs.get('data')
 
-    def validate_file(self, file):
-        # Multiple requests may come in before any are handled.
-        # We have to lock the quota and then get the latest from the DB
-        # because it may have updated during handling of another request
-        self.context['request'].user.quota.lock.acquire()
-        quota = UserQuota.objects.get(pk=self.context['request'].user.quota.pk)
-        try:
-            if file.size + quota.used > quota.allowed:
-                raise serializers.ValidationError('File size exceeds user quota')
+    def validate(self, attrs):
+        attrs['size'] = attrs['file'].size
+        return attrs
 
-            quota.use(file.size)
-        finally:
-            quota.lock.release()
+    def validate_file(self, file):
+        user = self.context['request'].user
+        user.quota.refresh_from_db()
+
+        if file.size + user.quota.used > user.quota.allowed:
+            raise serializers.ValidationError('File size exceeds user quota')
+
+        user.quota.use(file.size)
         return file
 
     def validate_name(self, name):
