@@ -39,7 +39,8 @@ class FileSerializer(serializers.ModelSerializer):
         self.context['data'] = kwargs.get('data')
 
     def validate(self, attrs):
-        attrs['size'] = attrs['file'].size
+        if 'file' in attrs:
+            attrs['size'] = attrs['file'].size
         return attrs
 
     def validate_file(self, file):
