@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
             copyAccessToken() {
                 copyToClipboard(this.accessToken);
             },
-            formatBytes: formatBytes,
         }
     });
 });

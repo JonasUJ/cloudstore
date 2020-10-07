@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.modal[p] = null
                 }
             },
+            isTouch: isTouch,
             folderSize: (folder) => folder.files.length + folder.folders.length,
             direction: (bool, asc) => (bool * 2 - 1) * (asc * 2 - 1),
             sorted(list, key, ascending) {

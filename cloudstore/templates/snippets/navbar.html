@@ -43,9 +43,9 @@
                     <div class="is-block">
                         <span v-cloak v-if="shared_state.user" class="mb-1">
                             {% verbatim %}
-                                {{ formatBytes(shared_state.user?.quota.used, 1) }}
+                                {{ shared_state.user?.quota.used | formatBytes }}
                                 used of
-                                {{ formatBytes(shared_state.user?.quota.allowed, 1) }}
+                                {{ shared_state.user?.quota.allowed | formatBytes }}
                             {% endverbatim %}
                         </span>
                         <progress class="progress is-small is-primary" :value="shared_state.user?.quota.used / shared_state.user?.quota.allowed" max="1"></progress>
@@ -60,7 +60,7 @@
                         {{ request.user }}
                     </a>
                     <div class="navbar-dropdown is-boxed">
-                        <a class="navbar-item" href="{% url 'cloudstore:account' %}">
+                        <a class="navbar-item is-hidden-touch" href="{% url 'cloudstore:account' %}">
                             Account settings
                         </a>
 

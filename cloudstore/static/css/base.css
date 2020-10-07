@@ -43,3 +43,7 @@ html::-webkit-scrollbar-thumb {
 .is-clear {
     opacity: 0;
 }
+
+.is-flex-grow {
+    flex-grow: 1;
+}
