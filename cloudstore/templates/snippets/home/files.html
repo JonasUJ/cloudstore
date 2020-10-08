@@ -6,7 +6,8 @@
          @keyup.delete="deleteObj(file)"
          class="file column is-full-mobile is-6-tablet is-4-desktop is-3-widescreen is-one-fifth-fullhd is-2">
         <figure class="image is-square">
-            <div @dragstart="drag($event, file, 'file')"
+            <div @dblclick="modal.file = file"
+                 @dragstart="drag($event, file, 'file')"
                  @dragend="dragend($event, file, folder.id)"
                  @focusin="verify(file, folder.id); target = file"
                  @focusout="target = target === file ? null : target"

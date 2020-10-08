@@ -2,7 +2,8 @@
 
 <div v-cloak class="modal" :class="{'is-active': showModal}">
     <div class="modal-background" @click="hideModal"></div>
-    <div class="modal-content">
+    <div :class="{'width-100': modal.file}"
+         class="modal-content">
 
         <section v-if="modal.edit" class="section">
             <div class="box is-narrow">
@@ -61,6 +62,21 @@
                     {{ modal.error }}
                 </div>
             </article>
+        </section>
+
+        <section v-else-if="modal.file" class="section height-100">
+            <div class="columns is-gapless height-100">
+                <div class="column is-9">
+                    <figure class="image height-100">
+                        <img class="image-fill" :src="modal.file.file">
+                    </figure>
+                </div>
+                <div class="column is-3 has-background-black-bis has-text-primary">
+                    <ul class="px-2 py-2">
+                        <li>{{ modal.file.name }}</li>
+                    </ul>
+                </div>
+            </div>
         </section>
 
     </div>

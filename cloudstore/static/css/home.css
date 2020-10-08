@@ -187,3 +187,11 @@ tr.file {
 #sync {
     transition: opacity 400ms;
 }
+
+img.image-fill {
+    max-height: 100%;
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    margin: auto;
+}

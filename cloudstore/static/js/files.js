@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 edit: null,
                 newFolder: null,
                 error: null,
+                file: null,
             },
             dragging: false,
             dragcur: null,
