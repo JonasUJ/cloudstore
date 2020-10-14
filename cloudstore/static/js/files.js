@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 error: null,
                 file: null,
             },
+            fileContent: '',
             dragging: false,
             dragcur: null,
             dragsrc: null,
@@ -41,13 +42,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 // The modal should be shown if any of its properties is true
                 for (let p in this.modal) {
                     if (this.modal[p]) {
+                        document.documentElement.style.overflowY = 'hidden';
                         return true;
                     }
                 }
+
+                document.documentElement.style.overflowY = 'auto';
                 return false;
             },
             sortedUploading: function () {
                 return this.upload_queue.uploading.slice(0, 20).sort((a, b) => b.progress - a.progress);
+            },
+        },
+        watch: {
+            'modal.file': function (o, n) {
+                this.fileContent = 'Loading...';
+                this.setFileContent();
             },
         },
         methods: {
@@ -316,14 +326,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 await this.setFolder(pk);
                 await this.refresh();
             },
+            isImage(ext) {
+                return isAnyType(ext, imgtypes);
+            },
+            isVideo(ext) {
+                return isAnyType(ext, videotypes);
+            },
+            isAudio(ext) {
+                return isAnyType(ext, audiotypes);
+            },
             isDisplayable(ext) {
-
-                // If the file is an image type
-                if (ext.length > 0) {
-                    return imgtypes.includes(ext.substring(1).toUpperCase());
+                return isAnyType(ext, displayabletypes);
+            },
+            setFileContent() {
+                if (this.modal.file && this.modal.file.size < 51250 && this.modal.file.text) {
+                    fetch(this.modal.file.file)
+                        .then((resp) => resp.text())
+                        .then((text) => {
+                            if (!text) {
+                                text = 'The file is empty.'
+                            }
+                            this.fileContent = text;
+                        });
                 }
-
-                return false;
             },
             getIconClass(ext) {
 
@@ -768,3 +793,31 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+
+// https://jsfiddle.net/metachris/1vz9oobc/
+Vue.directive('highlightjs', {
+    deep: true,
+    bind: function (el, binding) {
+        // on first bind, highlight all targets
+        let targets = el.querySelectorAll('code')
+        targets.forEach((target) => {
+            // if a value is directly assigned to the directive, use this
+            // instead of the element content.
+            if (binding.value) {
+                target.textContent = binding.value
+            }
+            hljs.highlightBlock(target)
+        })
+    },
+    componentUpdated: function (el, binding) {
+        // after an update, re-fill the content and then highlight
+        let targets = el.querySelectorAll('code')
+        targets.forEach((target) => {
+            if (binding.value) {
+                target.textContent = binding.value
+                hljs.highlightBlock(target)
+            }
+        })
+    }
+})

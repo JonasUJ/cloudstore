@@ -1,5 +1,6 @@
 import os
 from io import BytesIO
+from mimetypes import guess_type
 
 from PIL import Image, UnidentifiedImageError
 
@@ -56,6 +57,12 @@ class File(models.Model):
 
     def clean_name(self) -> str:
         return os.path.splitext(self.name)[0]
+
+    def text(self) -> bool:
+        mimetype = guess_type(self.name)[0]
+        if mimetype:
+            mimetype = mimetype.split('/')[0] == 'text'
+        return mimetype
 
     def generate_thumbnail(self):
         ext = self.ext().strip('.').upper()

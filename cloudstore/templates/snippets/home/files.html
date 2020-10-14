@@ -7,6 +7,7 @@
          class="file column is-full-mobile is-6-tablet is-4-desktop is-3-widescreen is-one-fifth-fullhd is-2">
         <figure class="image is-square">
             <div @dblclick="modal.file = file"
+                 @click="isTouch() && (modal.file = file)"
                  @dragstart="drag($event, file, 'file')"
                  @dragend="dragend($event, file, folder.id)"
                  @focusin="verify(file, folder.id); target = file"
@@ -24,7 +25,7 @@
                                 </span>
                                 <img @load="$event.target.style.opacity = 1"
                                      :src="file.thumb || file.file"
-                                     v-if="shared_state.user.settings.view_img && isDisplayable(file.ext)">
+                                     v-if="shared_state.user.settings.view_img && isImage(file.ext)">
                             </figure>
                         </div>
                         <div class="card-content-footer has-background-black-bis">

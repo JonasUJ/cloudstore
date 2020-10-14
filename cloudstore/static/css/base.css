@@ -32,6 +32,10 @@ html::-webkit-scrollbar-thumb {
     background-color: #FFF;
 }
 
+.modal-background-darker {
+    background-color: rgba(10, 10, 10, 0.8);
+}
+
 .has-shadow {
     box-shadow: 0 1rem 1rem -0.5rem #121212;
 }

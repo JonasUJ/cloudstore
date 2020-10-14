@@ -1,3 +1,9 @@
+@media screen and (max-width: 1023px) {
+    .navigate-btn {
+        top: 64px !important;
+    }
+}
+
 ::-webkit-progress-value {
     transition: width 400ms;
 }
@@ -132,7 +138,7 @@ tr.file {
 }
 
 #main-container {
-    min-height: 50vh;
+    min-height: 75vh;
 }
 
 #main-container.is-active:not(.is-disabled) {
@@ -202,28 +208,43 @@ figure.image-fill {
 
 .modal-fit {
     width: fit-content;
+    max-width: 100%;
 }
 
 .modal-title {
     position: fixed;
+    height: 32px;
     top: 20px;
     left: 20px;
     max-width: 60%;
 }
 
 .modal-title * {
+    line-height: 32px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding-bottom: 0.2ch;
 }
 
-.navigate-btn {
+.modal-btn {
     background: none;
-    position: fixed;
-    top: auto;
     color: #FFF;
     border: none;
+}
+
+.modal-btn:focus {
+    outline: none;
+}
+
+.modal-title,
+.modal-btn .icon *::before {
+    text-shadow: 1px 2px 4px #121212;
+}
+
+.navigate-btn {
+    position: fixed;
+    top: auto;
 }
 
 .navigate-btn.is-left {

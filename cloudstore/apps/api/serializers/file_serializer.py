@@ -20,6 +20,7 @@ class FileSerializer(serializers.ModelSerializer):
             'accessed',
             'clean_name',
             'ext',
+            'text',
         ]
         extra_kwargs = {
             'thumb': {'read_only': True},
