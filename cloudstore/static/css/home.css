@@ -188,10 +188,48 @@ tr.file {
     transition: opacity 400ms;
 }
 
-img.image-fill {
+figure.image-fill {
+    width: fit-content;
+    margin: auto;
+}
+
+.image-fill img {
     max-height: 100%;
     max-width: 100%;
     height: auto;
     width: auto;
-    margin: auto;
+}
+
+.modal-fit {
+    width: fit-content;
+}
+
+.modal-title {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    max-width: 60%;
+}
+
+.modal-title * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-bottom: 0.2ch;
+}
+
+.navigate-btn {
+    background: none;
+    position: fixed;
+    top: auto;
+    color: #FFF;
+    border: none;
+}
+
+.navigate-btn.is-left {
+    left: 20px;
+}
+
+.navigate-btn.is-right {
+    right: 20px;
 }

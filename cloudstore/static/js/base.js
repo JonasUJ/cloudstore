@@ -74,6 +74,13 @@ function isTouch() {
     return (window.innerWidth ?? document.documentElement.clientWidth) < 1024;
 }
 
+function truncate(string, length) {
+    if (string.length > length) {
+        string = `${string.substring(0, length - 3)}...`;
+    }
+    return string;
+}
+
 // https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 B';

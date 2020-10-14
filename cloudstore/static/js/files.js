@@ -125,6 +125,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 this.sorting = key;
             },
+            next(item, skip) {
+                // Return the file `skip` indices ahead of `item` in sortedFiles
+                let i = skip + this.sortedFiles.map(f => f.id).indexOf(item.id);
+                if (i < 0) i = this.sortedFiles.length + i;
+                return this.sortedFiles[i % this.sortedFiles.length];
+            },
             purge(obj) {
                 if (this.typeOf(obj) === 'file') {
                     // Files only need to be purged from their parent folder.
@@ -358,9 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Set the name and truncate it
                 let name = obj.name;
-                if (name.length > 12) {
-                    name = `${name.substring(0, 12)}...`;
-                }
+                name = truncate(name, 15);
 
                 this.dragging = name;
                 this.type = type;
