@@ -72,6 +72,8 @@
 <template v-cloak v-else>
     <tr v-for="file in sortedFiles"
         :key="file.id"
+        @dblclick="modal.file = file"
+        @click="isTouch() && (modal.file = file)"
         @keyup.delete="deleteObj(file)"
         @dragstart="drag($event, file, 'file')"
         @dragend="dragend($event, file, folder.id)"
