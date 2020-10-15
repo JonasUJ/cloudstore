@@ -28,7 +28,7 @@
                      @mouseleave="current_target = null"
                      :class="{'is-hidden': !target && !current_target}"
                      class="buttons is-fullwidth has-addons">
-                    <button @click=""
+                    <button @click="share(current_target)"
                             data-tooltip="Share"
                             class="button is-dark has-icons-left has-tooltip-bottom">
                         <span class="icon">

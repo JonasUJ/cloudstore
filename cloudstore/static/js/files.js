@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 edit: null,
                 newFolder: null,
                 error: null,
+                share: null,
                 file: null,
             },
             fileContent: '',
@@ -473,6 +474,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     // but that's a bit excessive
                     this.shared_state.user = await this.fetchData(`/api/users/${get('pk')}/`, {}, 'GET')
                 }
+            },
+            share(obj) {
+                if (this.typeOf(obj) === 'file') {
+                    this.modal.share = obj;
+                } else {
+                    // Not implemented
+                }
+            },
+            shareChange(event) {
+                const el = document.getElementById('share-access-password-fieldset');
+                if (event.target.id === 'share-access-password') {
+                    el.removeAttribute('disabled');
+                } else {
+                    el.setAttribute('disabled', '');
+                }
+            },
+            copy(text) {
+                copyToClipboard(text);
             },
             abortAll() {
                 this.upload_queue.uploading.forEach(f => f.abort())
