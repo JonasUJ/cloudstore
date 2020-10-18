@@ -2,7 +2,7 @@
 
 <template v-cloak v-if="tiles()">
     <div v-for="_folder in sortedFolders"
-         :key="_folder.id"
+         :key="-_folder.id"
          @keyup.delete="deleteObj(_folder)"
          class="folder column is-full-mobile is-6-tablet is-4-desktop is-3-widescreen is-one-fifth-fullhd is-2">
         <figure>
@@ -33,7 +33,7 @@
 
 <template v-cloak v-else>
     <tr v-for="_folder in sortedFolders"
-        :key="_folder.id"
+        :key="-_folder.id"
         @keyup.delete="deleteObj(_folder)"
         @dblclick="openFolder(_folder.id)"
         @click="isTouch() && openFolder(_folder.id)"
