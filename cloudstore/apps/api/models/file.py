@@ -5,6 +5,7 @@ from mimetypes import guess_type
 from PIL import Image, UnidentifiedImageError
 
 from django.conf import settings
+from django.contrib.auth.hashers import check_password, make_password
 from django.core.files import File as CoreFile
 from django.db import models
 from django.dispatch import receiver
@@ -12,6 +13,28 @@ from django.dispatch import receiver
 from private_storage.fields import PrivateFileField
 
 from shortuuid import uuid
+
+
+class ShareState(models.IntegerChoices):
+    PRIVATE = 0
+    PUBLIC = 1
+    PASSWORD_PROTECTED = 2
+
+
+class Share(models.Model):
+    state = models.IntegerField(choices=ShareState.choices, default=ShareState.PRIVATE)
+    key = models.CharField(max_length=100, blank=True, null=True)
+
+    def matches(self, key):
+        return check_password(key, self.key)
+
+    def set_key(self, key):
+        self.key = make_password(key)
+        self.save()
+
+
+def _get_share() -> Share:
+    return Share.objects.create().pk
 
 
 def get_uuid() -> str:
@@ -48,6 +71,7 @@ class File(models.Model):
     size = models.BigIntegerField(default=0)
     thumb = NotRequiredPrivateFileField(upload_to=get_thumbnail_filename, blank=True, null=True)
     folder = models.ForeignKey('Folder', related_name='files', on_delete=models.CASCADE)
+    share = models.OneToOneField(Share, on_delete=models.CASCADE, default=_get_share)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='files', on_delete=models.CASCADE
     )
