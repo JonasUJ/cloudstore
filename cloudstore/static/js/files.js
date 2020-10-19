@@ -20,6 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 share: null,
                 file: null,
             },
+            share_obj: {
+                state: 0,
+                key: '',
+            },
             fileContent: '',
             dragging: false,
             dragcur: null,
@@ -475,20 +479,36 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.shared_state.user = await this.fetchData(`/api/users/${get('pk')}/`, {}, 'GET')
                 }
             },
-            share(obj) {
+            async share(obj) {
                 if (this.typeOf(obj) === 'file') {
+                    // Get the state from backend because we want to display it
+                    share = await this.fetchData(`/api/share/${obj.share}/`, {}, 'GET');
+
+                    // Open the modal with this obj
                     this.modal.share = obj;
+
+                    // We have to let Vue open the modal before we can refer to the elements
+                    Vue.nextTick(() => {
+                        // The first argument is a mock event
+                        this.shareChange({ target: { id: share.state === 2 ? 'share-access-password' : '' } }, share.state);
+                    })
                 } else {
                     // Not implemented
                 }
             },
-            shareChange(event) {
+            shareChange(event, state) {
                 const el = document.getElementById('share-access-password-fieldset');
                 if (event.target.id === 'share-access-password') {
                     el.removeAttribute('disabled');
                 } else {
                     el.setAttribute('disabled', '');
                 }
+                this.share_obj.state = state;
+            },
+            async shareSubmit(obj) {
+                this.hideModal();
+                resp = await this.fetchData(`/api/share/${obj.share}/`, this.share_obj, 'PUT');
+                console.log(resp);
             },
             copy(text) {
                 copyToClipboard(text);
