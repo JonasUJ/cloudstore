@@ -11,6 +11,7 @@ from .views import (
     FileViewSet,
     FolderContentsView,
     FolderViewSet,
+    ShareRetrieveUpdateView,
     UserRetrieveDestroyView,
 )
 
@@ -42,4 +43,5 @@ urlpatterns = [
     path('folders/<int:pk>/contents/', FolderContentsView.as_view()),
     path('access_token/', AccessTokenCreate.as_view(), name='access-token-create'),
     path('users/<int:pk>/', UserRetrieveDestroyView.as_view(), name='cloudstoreuser-detail'),
+    path('share/<int:pk>/', ShareRetrieveUpdateView.as_view(), name='share-retrieve-update'),
 ]

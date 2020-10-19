@@ -2,7 +2,19 @@ import os.path
 
 from rest_framework import serializers
 
-from ..models import File, Folder
+from ..models import File, Folder, Share
+
+
+class ShareSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Share
+        fields = ['id', 'state', 'key']
+        extra_kwargs = {'key': {'write_only': True}}
+
+    def validate_key(self, key):
+        if key:
+            key = self.instance.set_key(key)
+        return key
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -21,10 +33,12 @@ class FileSerializer(serializers.ModelSerializer):
             'clean_name',
             'ext',
             'text',
+            'share',
         ]
         extra_kwargs = {
             'thumb': {'read_only': True},
             'owner': {'read_only': True},
+            'share': {'read_only': True},
             'file': {'allow_empty_file': True},
         }
 

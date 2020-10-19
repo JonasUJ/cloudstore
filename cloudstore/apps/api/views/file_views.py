@@ -1,9 +1,19 @@
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import File
+from ..models import File, Share
 from ..permissions import IsSelf
-from ..serializers import FileSerializer
+from ..serializers import FileSerializer, ShareSerializer
+
+
+class ShareRetrieveUpdateView(RetrieveUpdateAPIView):
+    queryset = Share.objects.all()
+    serializer_class = ShareSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(file__owner=self.request.user)
 
 
 class FileViewSet(ModelViewSet):

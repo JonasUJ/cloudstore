@@ -31,6 +31,7 @@ class Share(models.Model):
     def set_key(self, key):
         self.key = make_password(key)
         self.save()
+        return self.key
 
 
 def _get_share() -> Share:
@@ -71,7 +72,9 @@ class File(models.Model):
     size = models.BigIntegerField(default=0)
     thumb = NotRequiredPrivateFileField(upload_to=get_thumbnail_filename, blank=True, null=True)
     folder = models.ForeignKey('Folder', related_name='files', on_delete=models.CASCADE)
-    share = models.OneToOneField(Share, on_delete=models.CASCADE, default=_get_share)
+    share = models.OneToOneField(
+        Share, related_name='file', on_delete=models.CASCADE, default=_get_share
+    )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='files', on_delete=models.CASCADE
     )
