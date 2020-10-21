@@ -33,6 +33,10 @@ class Share(models.Model):
         self.save()
         return self.key
 
+    def __str__(self):
+        # pylint: disable=no-member
+        return f'Share(state={ShareState(self.state).name}, file={self.file})'
+
 
 def _get_share() -> Share:
     return Share.objects.create().pk
