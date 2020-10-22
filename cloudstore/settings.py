@@ -79,13 +79,13 @@ IMAGE_THUMBNAIL_SIZE = (256, 256)
 # Root directory of all user files stored by the app
 PRIVATE_STORAGE_ROOT = os.environ.get('FILE_STORAGE_DIR')
 
-PRIVATE_STORAGE_AUTH_FUNCTION = 'cloudstore.apps.cloudstore.permissions.allow_owner'
+PRIVATE_STORAGE_AUTH_FUNCTION = 'cloudstore.apps.cloudstore.permissions.if_shared'
 
-if not DEBUG:
-    PRIVATE_STORAGE_SERVER = 'nginx'
-    PRIVATE_STORAGE_INTERNAL_URL = '/private-x-accel-redirect/'
+if DEBUG:
+    PRIVATE_STORAGE_SERVER = 'private_storage.servers.DjangoStreamingServer'
 else:
-    PRIVATE_STORAGE_SERVER = 'django'
+    PRIVATE_STORAGE_SERVER = 'private_storage.servers.NginxXAccelRedirectServer'
+    PRIVATE_STORAGE_INTERNAL_URL = '/private-x-accel-redirect/'
 
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.MemoryFileUploadHandler',

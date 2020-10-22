@@ -1,10 +1,16 @@
 import mimetypes
 
+from django.core.exceptions import PermissionDenied
 from django.utils.functional import cached_property
+from django.utils.html import escape
+from django.views.generic import FormView
 
 from private_storage.models import PrivateFile
 from private_storage.views import PrivateStorageView
 
+from cloudstore.apps.api.models import ShareState  # noqa pylint: disable=import-error
+
+from ..forms import ResourcePasswordForm
 from ...api.models import File
 
 
@@ -38,6 +44,18 @@ class CloudstorePrivateFile(PrivateFile):
         return mimetype or 'application/octet-stream'
 
 
+def get_form_view(file, form):
+    return FormView.as_view(
+        form_class=form,
+        template_name='misc/resource_password.html',
+        extra_context={
+            'title': 'Password required',
+            'content': f'The file <code>{escape(file.name)}</code> has been password '
+            'protected by its owner.',
+        },
+    )
+
+
 class CloudstorePrivateStorageView(PrivateStorageView):
     content_disposition = 'inline'
     thumb = False
@@ -52,3 +70,40 @@ class CloudstorePrivateStorageView(PrivateStorageView):
 
     def get_content_disposition_filename(self, private_file):
         return self.content_disposition_filename or private_file.file.get().name
+
+    def get(self, request, *args, **kwargs):
+        private_file = self.get_private_file()
+
+        if not self.can_access_file(private_file):
+            raise PermissionDenied(self.permission_denied_message)
+
+        if not private_file.exists():
+            return self.serve_file_not_found(private_file)
+
+        file = private_file.file.get()
+        if (
+            file.share.state == ShareState.PASSWORD_PROTECTED
+            and file.owner != private_file.request.user
+        ):
+            password_view = get_form_view(
+                file, lambda *args, **kwargs: ResourcePasswordForm(file, *args, **kwargs)
+            )
+            return password_view(private_file.request)
+
+        return self.serve_file(private_file)
+
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+        private_file = self.get_private_file()
+
+        if not self.can_access_file(private_file):
+            raise PermissionDenied(self.permission_denied_message)
+
+        if not private_file.exists():
+            return self.serve_file_not_found(private_file)
+
+        form = ResourcePasswordForm(private_file.file.get(), request.POST)
+        if form.is_valid():
+            return self.serve_file(private_file)
+
+        password_view = get_form_view(private_file.file.get(), lambda *args, **kwargs: form)
+        return password_view(private_file.request)
