@@ -190,6 +190,7 @@ MESSAGE_TAGS = {
 # Custom settings for django-simple-bulma, primarily colors
 BULMA_SETTINGS = {
     'output_style': 'compressed',
+    'fontawesome_token': os.environ.get('FONTAWESOME', ''),
     'extensions': [
         'bulma-checkradio',
         'bulma-divider',
