@@ -77,9 +77,6 @@ class CloudstorePrivateStorageView(PrivateStorageView):
         if not self.can_access_file(private_file):
             raise PermissionDenied(self.permission_denied_message)
 
-        if not private_file.exists():
-            return self.serve_file_not_found(private_file)
-
         file = private_file.file.get()
         if (
             file.share.state == ShareState.PASSWORD_PROTECTED
@@ -97,9 +94,6 @@ class CloudstorePrivateStorageView(PrivateStorageView):
 
         if not self.can_access_file(private_file):
             raise PermissionDenied(self.permission_denied_message)
-
-        if not private_file.exists():
-            return self.serve_file_not_found(private_file)
 
         form = ResourcePasswordForm(private_file.file.get(), request.POST)
         if form.is_valid():
