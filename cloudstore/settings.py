@@ -249,10 +249,13 @@ BULMA_SETTINGS = {
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
         'standard': {
-            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+            'format': '[%(levelname)s %(name)s] (%(asctime)s) %(message)s',
+        },
+        'short': {
+            'format': '[%(levelname)s] %(message)s',
         },
     },
     'filters': {'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'}},
@@ -262,9 +265,13 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         },
-        'console': {'class': 'logging.StreamHandler'},
-        'logfile': {
+        'console': {
             'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'short',
+        },
+        'logfile': {
+            'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': './logs/cloudstore.log',
             'maxBytes': 2 * 1024 * 1024,
@@ -273,13 +280,18 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
+        'django': {
+            'handlers': ['logfile', 'mail_admins'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
             'propagate': True,
         },
         'cloudstore': {
-            'handlers': ['logfile', 'console'],
+            'handlers': ['logfile', 'console', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
         },
