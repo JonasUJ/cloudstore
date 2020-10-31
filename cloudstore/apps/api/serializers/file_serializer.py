@@ -2,6 +2,8 @@ import os.path
 
 from rest_framework import serializers
 
+from sanitize_filename import sanitize
+
 from ..models import File, Folder, Share
 
 
@@ -86,4 +88,4 @@ class FileSerializer(serializers.ModelSerializer):
                 new_name = f'{base} ({i}){ext}'
             name = new_name
 
-        return name
+        return sanitize(name)

@@ -4,6 +4,7 @@ psycopg2-binary~=2.8
 Hypercorn~=0.10
 djangorestframework~=3.11
 shortuuid~=1.0
+sanitize-filename~=1.2
 # django-simple-bulma~=2.0
 git+https://github.com/JonasUJ/django-simple-bulma.git
 django-private-storage~=2.2

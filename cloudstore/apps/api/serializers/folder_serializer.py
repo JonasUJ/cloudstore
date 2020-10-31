@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from sanitize_filename import sanitize
+
 from . import FileSerializer
 from ..models import File, Folder
 
@@ -38,7 +40,7 @@ class FolderSerializer(serializers.ModelSerializer):
                 new_name = f'{name} ({i})'
             name = new_name
 
-        return name
+        return sanitize(name)
 
     def validate_folder(self, folder):
         folder_pk = self.context.get('pk', False)
