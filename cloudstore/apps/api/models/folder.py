@@ -1,11 +1,18 @@
 from django.conf import settings
 from django.db import models
 
+from shortuuid import uuid
+
 from ..models import File
+
+
+def get_uuid() -> str:
+    return uuid()[:8]
 
 
 class Folder(models.Model):
     name = models.CharField(max_length=200)
+    uuid = models.CharField(max_length=8, default=get_uuid, unique=True)
     folder = models.ForeignKey(
         'Folder', blank=True, null=True, related_name='folders', on_delete=models.CASCADE
     )
