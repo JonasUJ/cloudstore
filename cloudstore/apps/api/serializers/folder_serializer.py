@@ -9,7 +9,7 @@ from ..models import File, Folder
 class FolderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Folder
-        fields = ['id', 'name', 'files', 'folders', 'folder', 'owner']
+        fields = ['id', 'name', 'uuid', 'files', 'folders', 'folder', 'owner']
         extra_kwargs = {
             'folder': {'allow_null': False},
             'files': {'read_only': True},
