@@ -1,3 +1,8 @@
+import zipfile
+from os.path import join
+from tempfile import NamedTemporaryFile
+from typing import Generator, Tuple, Union
+
 from django.conf import settings
 from django.db import models
 
@@ -20,10 +25,8 @@ class Folder(models.Model):
         settings.AUTH_USER_MODEL, related_name='folders', on_delete=models.CASCADE
     )
 
-    def deep_contains(self, other):
-        """
-        BFS for a File or Folder
-        """
+    def deep_contains(self, other: Union[File, 'Folder']) -> bool:
+        """BFS for a File or Folder."""
         # pylint: disable=no-member
         if isinstance(other, Folder) and any(other.pk == f.pk for f in self.folders.all()):
             return True
@@ -33,6 +36,26 @@ class Folder(models.Model):
             if folder.deep_contains(other):
                 return True
         return False
+
+    def get_file_paths(self) -> Generator[Tuple[str, str], None, None]:
+        """Generate 2-tuples with full name and relative names of all content."""
+        # pylint: disable=no-member
+        for file in self.files.all():
+            yield join(settings.PRIVATE_STORAGE_ROOT, file.uuid), file.name
+
+        # pylint: disable=no-member
+        for folder in self.folders.all():
+            for fullname, name in folder.get_file_paths():
+                yield fullname, join(folder.name, name)
+
+    def temp_zip(self) -> NamedTemporaryFile:
+        """Zip all folder contents into a ZipFile and return it as a NamedTemporaryFile."""
+        tempf = NamedTemporaryFile('r+b')
+        zipf = zipfile.ZipFile(tempf, 'w', zipfile.ZIP_DEFLATED)
+        for name, arcname in self.get_file_paths():
+            zipf.write(name, arcname)
+        # Why does tempf.seek(0) not work here, but it does right after the calling the function?
+        return tempf
 
     def __contains__(self, other):
         seq = []

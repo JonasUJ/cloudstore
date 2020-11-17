@@ -3,7 +3,10 @@ from django.contrib import admin
 from django.shortcuts import render
 from django.urls import include, path, re_path
 
-from cloudstore.apps.cloudstore.views import PrivateStorageView  # noqa pylint: disable=import-error
+from cloudstore.apps.cloudstore.views import (  # noqa pylint: disable=import-error
+    FolderZipView,
+    PrivateStorageView,
+)
 
 
 urlpatterns = [
@@ -15,6 +18,7 @@ urlpatterns = [
         name='serve_private_file_thumb',
     ),
     re_path('^m/(?P<path>.*)$', PrivateStorageView.as_view(), name='serve_private_file'),
+    re_path('^d/(?P<uuid>.*)$', FolderZipView.as_view(), name='serve_private_folder'),
     path('admin/', admin.site.urls, name='admin'),
     path('api-auth/', conf_include('rest_framework.urls')),
 ]

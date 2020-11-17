@@ -82,7 +82,7 @@ PRIVATE_STORAGE_ROOT = os.environ.get('FILE_STORAGE_DIR')
 PRIVATE_STORAGE_AUTH_FUNCTION = 'cloudstore.apps.cloudstore.permissions.if_shared'
 
 if DEBUG:
-    PRIVATE_STORAGE_SERVER = 'private_storage.servers.DjangoStreamingServer'
+    PRIVATE_STORAGE_SERVER = 'private_storage.servers.DjangoServer'
 else:
     PRIVATE_STORAGE_SERVER = 'private_storage.servers.NginxXAccelRedirectServer'
     PRIVATE_STORAGE_INTERNAL_URL = '/private-x-accel-redirect/'

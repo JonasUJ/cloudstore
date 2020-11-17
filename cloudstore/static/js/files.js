@@ -86,6 +86,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 link.click();
                 link.remove();
             },
+            downloadObj(obj) {
+                if (this.typeOf(obj) === 'file') {
+                    this.download(obj.file);
+                } else if (this.typeOf(obj) === 'folder') {
+                    this.download(`/d/${obj.uuid}`);
+                }
+            },
             tiles() {
                 return this.shared_state.user?.settings.view === 'tiles';
             },

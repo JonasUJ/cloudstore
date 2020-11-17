@@ -1,3 +1,4 @@
+from .folder_zip import FolderZipView
 from .home import HomeView
 from .login import CloudstoreLoginView as LoginView
 from .signup import SignUpView
