@@ -51,6 +51,7 @@ WORKDIR $APP_HOME
 
 # copy entrypoint.sh
 COPY ./entrypoint.sh $APP_HOME
+RUN chmod +x $APP_HOME/entrypoint.sh
 
 # copy project
 COPY . $APP_HOME
