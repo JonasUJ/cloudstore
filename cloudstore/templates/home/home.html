@@ -13,10 +13,10 @@
 {% endblock %}
 
 {% block content %}
+    <input type="hidden" name="pk" value="{{ request.user.pk }}">
+    <input type="hidden" name="base_folder" value="{{ request.user.base_folder.pk }}">
     <section @dragenter="dragenter($event)" id="items-section" class="section pt-4">
         {% include 'snippets/home/homebar.html' %}
-        <input type="hidden" name="pk" value="{{ request.user.pk }}">
-        <input type="hidden" name="base_folder" value="{{ request.user.base_folder.pk }}">
         <div @dragenter.stop="dragenter($event)"
              @dragover.prevent="$event.dataTransfer.dropEffect = 'move'"
              @drop.stop.prevent="drop($event, folder)"

@@ -5,7 +5,7 @@
          :key="file.id"
          @keyup.delete="deleteObj(file)"
          class="file column is-full-mobile is-6-tablet is-4-desktop is-3-widescreen is-one-fifth-fullhd is-2">
-        <figure class="image is-square">
+        <figure class="image is-square width-100">
             <div @dblclick="modal.file = file"
                  @click="isTouch() && (modal.file = file)"
                  @dragstart="drag($event, file, 'file')"

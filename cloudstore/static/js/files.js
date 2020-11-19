@@ -660,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             id: randomString(8),
                             name: name,
 
-                            _chunk_size: 50,
+                            _chunk_size: 10,
                             _progress: 0,
                             get progress() {
                                 return this._progress / this.size * 100;

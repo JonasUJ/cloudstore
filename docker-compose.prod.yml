@@ -35,6 +35,7 @@ services:
             - ./nginx/conf.d:/etc/nginx/user.conf.d:ro
             - static_volume:/home/app/web/static
             - letsencrypt:/etc/letsencrypt
+            - files:/home/app/files
         ports:
             - 80:80/tcp
             - 443:443/tcp
