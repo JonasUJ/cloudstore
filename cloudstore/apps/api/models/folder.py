@@ -69,4 +69,6 @@ class Folder(models.Model):
         return any(other.pk == item.pk for item in seq)
 
     def __str__(self):
+        if self.folder and self.folder.folder:
+            return f'{self.folder.name}/{self.name}'
         return self.name

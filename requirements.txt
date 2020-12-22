@@ -5,7 +5,6 @@ Hypercorn~=0.10
 djangorestframework~=3.11
 shortuuid~=1.0
 sanitize-filename~=1.2
-# django-simple-bulma~=2.0
-git+https://github.com/JonasUJ/django-simple-bulma.git
+django-simple-bulma~=2.1
 django-private-storage~=2.2
 Pillow~=7.2

@@ -41,6 +41,7 @@ class FileSerializer(serializers.ModelSerializer):
             'thumb': {'read_only': True},
             'owner': {'read_only': True},
             'share': {'read_only': True},
+            'size': {'read_only': True},
             'file': {'allow_empty_file': True},
         }
 
@@ -72,18 +73,33 @@ class FileSerializer(serializers.ModelSerializer):
 
     def validate_name(self, name):
         parent = self.context['data']['folder']
+        method = self.context['request'].method
 
-        if (
-            Folder.objects.filter(folder=parent, name=name).exists()
-            or File.objects.filter(folder=parent, name=name).exists()
-        ):
+        if method in ('PUT', 'PATCH'):
+
+            def validator(name):
+                return (
+                    Folder.objects.filter(folder=parent, name=name)
+                    .exclude(pk=self.instance.id)
+                    .exists()
+                    or File.objects.filter(folder=parent, name=name)
+                    .exclude(pk=self.instance.id)
+                    .exists()
+                )
+
+        else:
+
+            def validator(name):
+                return (
+                    Folder.objects.filter(folder=parent, name=name).exists()
+                    or File.objects.filter(folder=parent, name=name).exists()
+                )
+
+        if validator(name):
             i = 2
             base, ext = os.path.splitext(name)
             new_name = f'{base} ({i}){ext}'
-            while (
-                Folder.objects.filter(folder=parent, name=new_name).exists()
-                or File.objects.filter(folder=parent, name=new_name).exists()
-            ):
+            while validator(new_name):
                 i += 1
                 new_name = f'{base} ({i}){ext}'
             name = new_name
