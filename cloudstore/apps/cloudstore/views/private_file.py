@@ -15,10 +15,10 @@ from ...api.models import File
 
 
 class CloudstorePrivateFile(PrivateFile):
-    def __init__(self, *args, thumb=False, **kwargs):
+    def __init__(self, *args, thumb=False, path='', **kwargs):
         self.thumb = thumb
         super().__init__(*args, **kwargs)
-        self.file = File.objects.filter(uuid=self.relative_name)
+        self.file = File.objects.filter(uuid=path)
 
     @cached_property
     def name(self):
@@ -66,10 +66,16 @@ class CloudstorePrivateStorageView(PrivateStorageView):
             request=self.request,
             storage=self.get_storage(),
             relative_name=self.get_path(),
+            path=self.kwargs['path'],
         )
 
     def get_content_disposition_filename(self, private_file):
         return self.content_disposition_filename or private_file.file.get().name
+
+    def get_path(self):
+        if self.thumb:
+            return f'thumb/{super().get_path()}'
+        return super().get_path()
 
     def get(self, request, *args, **kwargs):
         private_file = self.get_private_file()

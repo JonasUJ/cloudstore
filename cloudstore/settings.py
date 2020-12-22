@@ -76,6 +76,11 @@ AUTH_USER_MODEL = 'cloudstore.CloudstoreUser'
 IMAGE_THUMBNAIL_TYPES = ['JPEG', 'GIF', 'PNG', 'BMP', 'WEBP']
 IMAGE_THUMBNAIL_SIZE = (256, 256)
 
+# We are proxied behind nginx
+if not DEBUG:
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Root directory of all user files stored by the app
 PRIVATE_STORAGE_ROOT = os.environ.get('FILE_STORAGE_DIR')
 
