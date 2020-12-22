@@ -9,10 +9,6 @@
 
     <title>{% block title %}Website{% endblock %} - {{ request.site.name }}</title>
 
-    {# Stylesheets #}
-    {% font_awesome %}
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-
     {# Scripts #}
     {% if DEBUG %}
         <script defer src="{% static 'js/vue.js' %}"></script>
@@ -24,8 +20,11 @@
 
     {% block head %}{% endblock %}
 
-    {# Bulma is both stylesheets and scripts #}
     {% bulma %}
+
+    {# Stylesheets #}
+    {% font_awesome %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
 
 <body>

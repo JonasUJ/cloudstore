@@ -85,7 +85,7 @@ main {
 
 .items .card-footer,
 .items .card-footer-item {
-    border: none;
+    border: none !important;
 }
 
 .items .card-footer-item:hover,
