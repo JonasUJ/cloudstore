@@ -515,7 +515,6 @@ document.addEventListener('DOMContentLoaded', function () {
             async shareSubmit(obj) {
                 this.hideModal();
                 resp = await this.fetchData(`/api/share/${obj.share}/`, this.share_obj, 'PUT');
-                console.log(resp);
             },
             copy(text) {
                 copyToClipboard(text);
